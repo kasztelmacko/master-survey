@@ -23,9 +23,10 @@ export interface InputQuestion extends BaseQuestion {
   inputType: 'text' | 'number';
 }
 
-export interface MultipleInputQuestion extends BaseQuestion {
-  type: 'multiple-input';
-  inputType: 'text';
+export interface MultipleChoiceQuestion extends BaseQuestion {
+  type: 'multiple-choice';
+  options: { id: string; label: string }[];
+  answers?: string[];
 }
 
 export interface LogoInputQuestion extends BaseQuestion {

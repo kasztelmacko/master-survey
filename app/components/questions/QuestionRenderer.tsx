@@ -1,6 +1,6 @@
 'use client';
 
-import type { Question } from '../types';
+import type { Question } from '../../types';
 import SingleChoiceQuestion from './SingleChoiceQuestion';
 import MultipleChoiceQuestion from './MultipleChoiceQuestion';
 import InputQuestion from './InputQuestion';

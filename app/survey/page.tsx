@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { questions } from '../data/questions';
-import QuestionRenderer from '../components/QuestionRenderer';
+import QuestionRenderer from '../components/questions/QuestionRenderer';
 
 export default function Survey() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -40,14 +40,14 @@ export default function Survey() {
     currentQuestion.type === 'logo-input' ? !allLogosAnswered : !currentAnswer;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-background">
       <div className="w-full max-w-2xl space-y-8">
         {/* Progress Indicator */}
-        <div className="text-sm text-gray-600">
-          Question {currentQuestionIndex + 1} of {questions.length}
+        <div className="text-sm text-text/80">
+          Pytanie {currentQuestionIndex + 1} na {questions.length}
         </div>
 
-
+        {/* Current Question */}
         <QuestionRenderer
           key={currentQuestion.id}
           question={currentQuestion}
@@ -56,13 +56,13 @@ export default function Survey() {
         />
 
         {/* Navigation Buttons */}
-        <div className="flex justify-between">
+        <div className="flex justify-end">
           <button
             onClick={handleNext}
             disabled={isNextButtonDisabled}
-            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
-            {isLastQuestion ? 'Submit' : 'Next'}
+            {isLastQuestion ? 'Wyślij' : 'Dalej'}
           </button>
         </div>
       </div>

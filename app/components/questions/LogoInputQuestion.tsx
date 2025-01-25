@@ -35,28 +35,32 @@ export default function LogoInputQuestion({ question, onAnswer, onAllAnswered }:
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">{question.question}</h2>
+      <h2 className="text-2xl font-semibold text-text">{question.question}</h2>
+
       <div className="space-y-6">
         <div className="space-y-2">
-          <img
-            src={currentLogo.src}
-            alt={currentLogo.alt}
-            className="w-32 h-32 object-contain mx-auto"
-          />
+          <figure className="w-32 h-32 flex items-center justify-center mx-auto">
+            <img
+              src={currentLogo.src}
+              alt={currentLogo.alt}
+              className="max-w-full max-h-full object-contain"
+            />
+          </figure>
+
           <div className="relative">
             <input
               type="text"
               value={answers[currentLogoIndex]}
               onChange={(e) => handleInputChange(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-28"
-              placeholder={`Wpisz nazwę dla ${currentLogo.alt}`}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-28"
+              placeholder={`Co to za logo? Wpisz nazwe i kliknij Dalej`}
             />
             {!isLastLogo && (
               <button
                 onClick={handleNext}
-                className="absolute right-0 top-0 h-full w-24 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600 focus:outline-none"
+                className="absolute right-0 top-0 h-full w-24 bg-primary text-white rounded-r-lg hover:bg-primary/90 focus:outline-none"
               >
-                Next
+                Dalej
               </button>
             )}
           </div>

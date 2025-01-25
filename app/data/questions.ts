@@ -69,13 +69,13 @@ export const questions: Question[] = [
   {
     id: '7',
     type: 'multiple-input',
-    question: 'Jakie marki fast-food znasz z całego świata? Wymień.',
+    question: 'Jakie marki fast-food znasz z całego świata?',
     inputType: 'text',
   },
   {
     id: '8',
     type: 'logo-input',
-    question: 'Czy rozpoznasz te marki po logo? Wpisz nazwy pod zdjęciem.',
+    question: 'Czy rozpoznasz te marki po logo?',
     logos: [
       { src: '/logos/mcdonald_logo.png', alt: 'McDonald\'s' },
       { src: '/logos/kfc_logo.png', alt: 'KFC' },
