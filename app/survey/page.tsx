@@ -14,11 +14,16 @@ export default function Survey() {
     setCurrentAnswer(answer);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentQuestionIndex < questions.length - 1) {
+      await logAnswer(questions[currentQuestionIndex].id, currentAnswer);
+
+      // Move to the next question
       setCurrentQuestionIndex((prev) => prev + 1);
       setCurrentAnswer(null);
     } else {
+      // If it's the last question, submit the survey
+      await logAnswer(questions[currentQuestionIndex].id, currentAnswer);
       alert('Survey completed!');
       console.log('Survey Answers:', answers);
     }
@@ -40,7 +45,6 @@ export default function Survey() {
           key={currentQuestion.id}
           question={currentQuestion}
           onAnswer={(answer) => handleAnswer(currentQuestion.id, answer)}
-          layout="horizontal"
         />
 
         {/* Navigation Buttons */}
@@ -56,4 +60,25 @@ export default function Survey() {
       </div>
     </div>
   );
+}
+
+async function logAnswer(question_id: string, answer: string | string[] | null) {
+  try {
+    const response = await fetch('/api/survey', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ question_id, answer }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to log answer');
+    }
+
+    const data = await response.json();
+    console.log('Answer logged successfully:', data);
+  } catch (error) {
+    console.error('Error logging answer:', error);
+  }
 }

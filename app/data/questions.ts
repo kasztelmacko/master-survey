@@ -66,4 +66,10 @@ export const questions: Question[] = [
     ],
     layout: 'vertical',
   },
+  {
+    id: '7',
+    type: 'multiple-input',
+    question: 'Jakie marki fast-food znasz z całego świata? Wymień.',
+    inputType: 'text',
+  },
 ];

@@ -1,5 +1,5 @@
-export type QuestionType = 'single-choice' | 'multiple-choice' | 'input';
-export type QuestionLayout = 'vertical' | 'horizontal'; // New type for layout
+export type QuestionType = 'single-choice' | 'multiple-choice' | 'input' | 'multiple-input';
+export type QuestionLayout = 'vertical' | 'horizontal';
 
 export interface BaseQuestion {
   id: string;
@@ -16,7 +16,6 @@ export interface SingleChoiceQuestion extends BaseQuestion {
 export interface MultipleChoiceQuestion extends BaseQuestion {
   type: 'multiple-choice';
   options: { id: string; label: string }[];
-  answers?: string[];
 }
 
 export interface InputQuestion extends BaseQuestion {
@@ -24,4 +23,9 @@ export interface InputQuestion extends BaseQuestion {
   inputType: 'text' | 'number';
 }
 
-export type Question = SingleChoiceQuestion | MultipleChoiceQuestion | InputQuestion;
+export interface MultipleInputQuestion extends BaseQuestion {
+  type: 'multiple-input';
+  inputType: 'text';
+}
+
+export type Question = SingleChoiceQuestion | MultipleChoiceQuestion | InputQuestion | MultipleInputQuestion;
