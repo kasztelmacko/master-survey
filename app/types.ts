@@ -1,4 +1,4 @@
-export type QuestionType = 'single-choice' | 'multiple-choice' | 'input' | 'multiple-input';
+export type QuestionType = 'single-choice' | 'multiple-choice' | 'input' | 'multiple-input' | 'logo-input'; // Add 'logo-input'
 export type QuestionLayout = 'vertical' | 'horizontal';
 
 export interface BaseQuestion {
@@ -28,4 +28,9 @@ export interface MultipleInputQuestion extends BaseQuestion {
   inputType: 'text';
 }
 
-export type Question = SingleChoiceQuestion | MultipleChoiceQuestion | InputQuestion | MultipleInputQuestion;
+export interface LogoInputQuestion extends BaseQuestion {
+  type: 'logo-input';
+  logos: { src: string; alt: string }[];
+}
+
+export type Question = SingleChoiceQuestion | MultipleChoiceQuestion | InputQuestion | MultipleInputQuestion | LogoInputQuestion;

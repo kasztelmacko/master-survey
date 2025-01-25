@@ -8,21 +8,25 @@ export default function Survey() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [currentAnswer, setCurrentAnswer] = useState<string | string[] | null>(null);
+  const [allLogosAnswered, setAllLogosAnswered] = useState(false);
 
   const handleAnswer = (questionId: string, answer: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
     setCurrentAnswer(answer);
   };
 
+  const handleAllLogosAnswered = (allAnswered: boolean) => {
+    setAllLogosAnswered(allAnswered);
+  };
+
   const handleNext = async () => {
     if (currentQuestionIndex < questions.length - 1) {
       await logAnswer(questions[currentQuestionIndex].id, currentAnswer);
 
-      // Move to the next question
       setCurrentQuestionIndex((prev) => prev + 1);
       setCurrentAnswer(null);
+      setAllLogosAnswered(false);
     } else {
-      // If it's the last question, submit the survey
       await logAnswer(questions[currentQuestionIndex].id, currentAnswer);
       alert('Survey completed!');
       console.log('Survey Answers:', answers);
@@ -32,6 +36,9 @@ export default function Survey() {
   const currentQuestion = questions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
+  const isNextButtonDisabled =
+    currentQuestion.type === 'logo-input' ? !allLogosAnswered : !currentAnswer;
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
       <div className="w-full max-w-2xl space-y-8">
@@ -40,18 +47,19 @@ export default function Survey() {
           Question {currentQuestionIndex + 1} of {questions.length}
         </div>
 
-        {/* Current Question */}
+
         <QuestionRenderer
           key={currentQuestion.id}
           question={currentQuestion}
           onAnswer={(answer) => handleAnswer(currentQuestion.id, answer)}
+          onAllAnswered={handleAllLogosAnswered}
         />
 
         {/* Navigation Buttons */}
         <div className="flex justify-between">
           <button
             onClick={handleNext}
-            disabled={!currentAnswer}
+            disabled={isNextButtonDisabled}
             className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             {isLastQuestion ? 'Submit' : 'Next'}
