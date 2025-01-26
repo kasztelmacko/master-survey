@@ -120,4 +120,21 @@ export const questions: Question[] = [
   //   questionId: '1',
   //   respondentId: 1,
   // },
+  {
+    id: "9",
+    type: "multiple-choice",
+    question: "W których z wymienionych restauracji fast-food miałeś/miałaś okazję zjeść?",
+    options: [
+      { id: "mcdonalds", "label": "McDonald's" },
+      { id: "burger-king", "label": "Burger King" },
+      { id: "wendys", "label": "Wendy's" },
+      { id: "kfc", "label": "KFC" },
+      { id: "subway", "label": "Subway" },
+      { id: "max-burgers" , "label": "Max Burgers" },
+      { id: "north-fish", "label": "North Fish" },
+      { id: "popeyes", "label": "Popeyes" },
+      { id: "five-guys", "label": "Five Guys" },
+    ],
+    layout: "vertical"
+  }
 ];
