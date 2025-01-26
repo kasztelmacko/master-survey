@@ -56,7 +56,11 @@ export default function MultipleChoiceQuestion({ question, onAnswer }: MultipleC
             </div>
 
             {/* Option Label */}
-            <label htmlFor={option.id} className="flex items-center gap-2 cursor-pointer text-text">
+            <label
+              htmlFor={option.id}
+              className="flex items-center gap-2 cursor-pointer text-text"
+              onClick={(e) => e.stopPropagation()}
+            >
               {option.label}
             </label>
 

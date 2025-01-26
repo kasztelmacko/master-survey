@@ -14,25 +14,25 @@ export default function Home() {
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <div className="text-center sm:text-left max-w-2xl">
           <h1 className="text-2xl sm:text-3xl font-bold mb-4">
-            Welcome to My Masters Thesis survey!
+            Witaj w ankiecie do pracy magisterskiej!
           </h1>
           <div>
-            You will be asked questions concerning fast food brands. The survey
-            asks about your preferences, choices, and factors influencing your
-            decisions.
+            Będziesz proszony/proszona o odpowiedzi na pytania dotyczące produktów
+            fast food. Ankieta dotyczy Twoich preferencji, wyborów oraz czynników
+            wpływających na Twoje decyzje.
           </div>
           <br />
           <div>
-            The research is conducted for scientific purposes and is anonymous.
-            Your answers will help my master's thesis.
+            Badanie jest prowadzone w celach naukowych i jest anonimowe. Twoje
+            odpowiedzi pomogą w realizacji mojej pracy magisterskiej.
           </div>
           <div>
-            The survey should take up to{" "}
-            <span className="font-bold">10 minutes</span>.
+            Ankieta powinna zająć do{" "}
+            <span className="font-bold">10 minut</span>.
           </div>
           <br />
           <div>
-            In case of any questions, feel free to contact me at{" "}
+            W przypadku pytań, zachęcam do kontaktu pod adresem{" "}
             <a
               href="mailto:m.kasztelani@student.uw.edu.pl"
               className="text-primary"
@@ -47,7 +47,7 @@ export default function Home() {
           onClick={handleStartSurvey}
           className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
-          Start Survey
+          Rozpocznij ankietę
         </button>
       </main>
     </div>

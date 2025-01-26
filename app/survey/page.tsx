@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation'; // Import useRouter
 import { questions } from '../data/questions';
 import QuestionRenderer from '../components/questions/QuestionRenderer';
 
 export default function Survey() {
+  const router = useRouter(); // Initialize the router
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [currentAnswer, setCurrentAnswer] = useState<string | string[] | null>(null);
@@ -28,8 +30,7 @@ export default function Survey() {
       setAllLogosAnswered(false);
     } else {
       await logAnswer(questions[currentQuestionIndex].id, currentAnswer);
-      alert('Survey completed!');
-      console.log('Survey Answers:', answers);
+      router.push('/end'); // Redirect to the end page
     }
   };
 
@@ -59,8 +60,10 @@ export default function Survey() {
         <div className="flex justify-end">
           <button
             onClick={handleNext}
+            className={`px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-opacity ${
+              isNextButtonDisabled ? 'opacity-0 pointer-events-none' : 'opacity-100'
+            }`}
             disabled={isNextButtonDisabled}
-            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             {isLastQuestion ? 'Wyślij' : 'Dalej'}
           </button>
