@@ -1,5 +1,21 @@
-export type QuestionType = 'single-choice' | 'multiple-choice' | 'input' | 'multiple-input' | 'logo-input'; // Add 'logo-input'
+// types.ts
+
+export type QuestionType = 'single-choice' | 'multiple-choice' | 'input' | 'multiple-input' | 'input-multiple' | 'dce';
 export type QuestionLayout = 'vertical' | 'horizontal';
+export type DisplayMode = 'logo-only' | 'item-card';
+
+interface Item {
+  src: string;
+  alt: string;
+  name?: string;
+  description?: string;
+  kcal?: number;
+  gram?: number;
+  main_color?: string;
+  brand_logo?: string;
+  price?: number;
+  [key: string]: any;
+}
 
 export interface BaseQuestion {
   id: string;
@@ -16,6 +32,7 @@ export interface SingleChoiceQuestion extends BaseQuestion {
 export interface MultipleChoiceQuestion extends BaseQuestion {
   type: 'multiple-choice';
   options: { id: string; label: string }[];
+  answers?: string[];
 }
 
 export interface InputQuestion extends BaseQuestion {
@@ -23,15 +40,29 @@ export interface InputQuestion extends BaseQuestion {
   inputType: 'text' | 'number';
 }
 
-export interface MultipleChoiceQuestion extends BaseQuestion {
-  type: 'multiple-choice';
-  options: { id: string; label: string }[];
-  answers?: string[];
+export interface MultipleInputQuestion extends BaseQuestion {
+  type: 'multiple-input';
+  inputType: 'text' | 'number';
+  items: Item[];
+  displayMode: DisplayMode;
 }
 
-export interface LogoInputQuestion extends BaseQuestion {
-  type: 'logo-input';
-  logos: { src: string; alt: string }[];
+export interface InputMultipleQuestion extends BaseQuestion {
+  type: 'input-multiple';
+  inputType: 'text' | 'number';
+  items?: Item[];
 }
 
-export type Question = SingleChoiceQuestion | MultipleChoiceQuestion | InputQuestion | MultipleInputQuestion | LogoInputQuestion;
+export interface DCEQuestion extends BaseQuestion {
+  type: 'dce';
+  questionId: string;
+  respondentId: number;
+}
+
+export type Question =
+  | SingleChoiceQuestion
+  | MultipleChoiceQuestion
+  | InputQuestion
+  | MultipleInputQuestion
+  | InputMultipleQuestion
+  | DCEQuestion;

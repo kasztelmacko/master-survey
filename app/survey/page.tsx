@@ -37,7 +37,7 @@ export default function Survey() {
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
   const isNextButtonDisabled =
-    currentQuestion.type === 'logo-input' ? !allLogosAnswered : !currentAnswer;
+    currentQuestion.type === 'multiple-input' ? !allLogosAnswered : !currentAnswer;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-background">

@@ -1,4 +1,5 @@
 import { Question } from '../types';
+import { brands } from './brands';
 
 export const questions: Question[] = [
   {
@@ -68,17 +69,55 @@ export const questions: Question[] = [
   },
   {
     id: '7',
-    type: 'multiple-input',
-    question: 'Jakie marki fast-food znasz z całego świata?',
+    type: 'input-multiple',
     inputType: 'text',
+    question: 'Jakie marki fast-food znasz z całego świata?',
   },
   {
     id: '8',
-    type: 'logo-input',
+    type: 'multiple-input',
+    inputType: 'text',
     question: 'Czy rozpoznasz te marki po logo?',
-    logos: [
+    displayMode: 'logo-only',
+    items: [
       { src: '/logos/mcdonald_logo.png', alt: 'McDonald\'s' },
       { src: '/logos/kfc_logo.png', alt: 'KFC' },
     ],
   },
+  {
+    id: '9',
+    type: 'multiple-input',
+    inputType: 'number',
+    question: 'Jak myślisz, ile kosztują te produkty na rynku?',
+    displayMode: 'item-card',
+    items: [
+      {
+        src: 'https://cdn.mcdonalds.pl/uploads/20220922161306/wies-mac.png',
+        alt: 'McDonald\'s',
+        name: 'WieśMac',
+        description: 'A delicious classic burger with lettuce, tomato, and cheese',
+        kcal: 524,
+        gram: 280,
+        main_color: brands.mcdonalds.main_color,
+        brand_logo: brands.mcdonalds.brand_logo,
+      },
+      {
+        src: 'https://cdn.prod.website-files.com/631b4b4e277091ef01450237/65947cd2a2c28c35b5ca6fb1_Whopper%20w%20Cheese.png',
+        alt: 'Burger King',
+        name: 'Whooper',
+        description: 'A flame-grilled beef patty topped with weggies, creamy mayonnaise, ketchup',
+        kcal: 480,
+        gram: 250,
+        main_color: brands.burgerking.main_color,
+        brand_logo: brands.burgerking.brand_logo,
+      },
+    ],
+  },
+  // {
+  //   id: '9',
+  //   type: 'dce',
+  //   question: 'Jakie marki fast-food znasz z całego świata?',
+  //   questionId: '1',
+  //   respondentId: 1,
+  // },
 ];

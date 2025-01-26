@@ -1,60 +1,113 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import ItemCard from '../items/ItemCard';
 
-interface MultipleInputQuestionProps {
-  question: { id: string; question: string };
-  onAnswer: (answers: string[]) => void;
+interface Item {
+  src: string;
+  alt: string;
+  name?: string;
+  description?: string;
+  kcal?: number;
+  gram?: number;
+  main_color?: string;
+  brand_logo?: string;
+  price?: number;
+  [key: string]: any;
 }
 
-export default function MultipleInputQuestion({ question, onAnswer }: MultipleInputQuestionProps) {
-  const [inputValue, setInputValue] = useState('');
-  const [answers, setAnswers] = useState<string[]>([]);
+interface MultipleInputQuestionProps {
+  question: {
+    id: string;
+    type: 'multiple-input';
+    inputType: 'text' | 'number';
+    question: string;
+    items: Item[];
+    displayMode: 'logo-only' | 'item-card';
+  };
+  onAnswer: (answers: string[]) => void;
+  onAllAnswered: (allAnswered: boolean) => void;
+}
 
-  const handleAdd = () => {
-    if (inputValue.trim()) {
-      const newAnswers = [...answers, inputValue.trim()];
-      setAnswers(newAnswers);
-      setInputValue('');
-      onAnswer(newAnswers);
+export default function MultipleInputQuestion({
+  question,
+  onAnswer,
+  onAllAnswered,
+}: MultipleInputQuestionProps) {
+  const [currentItemIndex, setCurrentItemIndex] = useState(0);
+  const [answers, setAnswers] = useState<string[]>(Array(question.items.length).fill(''));
+
+  const handleInputChange = (value: string) => {
+    const newAnswers = [...answers];
+    newAnswers[currentItemIndex] = value;
+    setAnswers(newAnswers);
+    onAnswer(newAnswers);
+  };
+
+  const handleNext = () => {
+    if (currentItemIndex < question.items.length - 1) {
+      setCurrentItemIndex((prev) => prev + 1);
     }
   };
+
+  const currentItem = question.items[currentItemIndex];
+  const isLastItem = currentItemIndex === question.items.length - 1;
+
+  useEffect(() => {
+    const allAnswered = answers.every((answer) => answer.trim() !== '');
+    onAllAnswered(allAnswered);
+  }, [answers, onAllAnswered]);
 
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold text-text">{question.question}</h2>
 
-      <div className="flex flex-col gap-4">
-        <div className="relative">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleAdd();
-              }
-            }}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-32"
-            placeholder="Wpisz markę fast-food i kliknij Dodaj"
-          />
-          <button
-            onClick={handleAdd}
-            className="absolute right-0 top-0 h-full w-32 bg-primary text-white rounded-r-lg hover:bg-primary/90 focus:outline-none"
-          >
-            Dodaj
-          </button>
-        </div>
+      <div className="space-y-6">
+        <div className="space-y-2">
+          {/* Render logo-only or item card based on displayMode */}
+          {question.displayMode === 'logo-only' ? (
+            <figure className="w-32 h-32 flex items-center justify-center mx-auto">
+              <img
+                src={currentItem.src}
+                alt={currentItem.alt}
+                className="max-w-full max-h-full object-contain"
+              />
+            </figure>
+          ) : (
+            <ItemCard
+              src={currentItem.src}
+              alt={currentItem.alt}
+              name={currentItem.name}
+              description={currentItem.description}
+              kcal={currentItem.kcal}
+              gram={currentItem.gram}
+              main_color={currentItem.main_color}
+              brand_logo={currentItem.brand_logo}
+              price={currentItem.price}
+            />
+          )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {answers.map((answer, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-center p-2 border rounded-lg bg-background"
-            >
-              <span className="text-text">{answer}</span>
-            </div>
-          ))}
+          <div className="relative">
+            <input
+              type={question.inputType}
+              value={answers[currentItemIndex]}
+              onChange={(e) => handleInputChange(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-28"
+              placeholder={
+                question.displayMode === 'logo-only'
+                  ? 'Co to za logo? Wpisz nazwę i kliknij Dalej'
+                  : 'Wpisz odpowiedź i kliknij Dalej'
+              }
+            />
+            {!isLastItem && (
+              <button
+                onClick={handleNext}
+                className="absolute right-0 top-0 h-full w-24 bg-primary text-white rounded-r-lg hover:bg-primary/90 focus:outline-none"
+              >
+                Dalej
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

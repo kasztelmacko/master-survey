@@ -5,7 +5,8 @@ import SingleChoiceQuestion from './SingleChoiceQuestion';
 import MultipleChoiceQuestion from './MultipleChoiceQuestion';
 import InputQuestion from './InputQuestion';
 import MultipleInputQuestion from './MultipleInputQuestion';
-import LogoInputQuestion from './LogoInputQuestion';
+import InputMultipleQuestion from './InputMultipleQuestion';
+import DCEQuestion from './DCEQuestion';
 
 interface QuestionRendererProps {
   question: Question;
@@ -21,10 +22,12 @@ export default function QuestionRenderer({ question, onAnswer, onAllAnswered  }:
       return <MultipleChoiceQuestion question={question} onAnswer={onAnswer} />;
     case 'input':
       return <InputQuestion question={question} onAnswer={onAnswer} />;
+    case 'input-multiple':
+      return <InputMultipleQuestion question={question} onAnswer={onAnswer} />;
     case 'multiple-input':
-      return <MultipleInputQuestion question={question} onAnswer={onAnswer} />;
-    case 'logo-input':
-      return <LogoInputQuestion question={question} onAnswer={onAnswer} onAllAnswered={onAllAnswered!} />;
+      return <MultipleInputQuestion question={question} onAnswer={onAnswer} onAllAnswered={onAllAnswered!} />;
+    case 'dce':
+      return <DCEQuestion questionId={question.questionId} respondentId={question.respondentId} onAnswer={onAnswer} />;
     default:
       return null;
   }
