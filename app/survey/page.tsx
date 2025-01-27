@@ -1,16 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from 'next/navigation';
 import { questions } from '../data/questions';
 import QuestionRenderer from '../components/questions/QuestionRenderer';
 
 export default function Survey() {
-  const router = useRouter(); // Initialize the router
+  const router = useRouter();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [currentAnswer, setCurrentAnswer] = useState<string | string[] | null>(null);
   const [allLogosAnswered, setAllLogosAnswered] = useState(false);
+
+  const responderId = 1;
 
   const handleAnswer = (questionId: string, answer: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
@@ -23,14 +25,14 @@ export default function Survey() {
 
   const handleNext = async () => {
     if (currentQuestionIndex < questions.length - 1) {
-      await logAnswer(questions[currentQuestionIndex].id, currentAnswer);
+      await logAnswer(questions[currentQuestionIndex].id, currentAnswer, responderId);
 
       setCurrentQuestionIndex((prev) => prev + 1);
       setCurrentAnswer(null);
       setAllLogosAnswered(false);
     } else {
-      await logAnswer(questions[currentQuestionIndex].id, currentAnswer);
-      router.push('/end'); // Redirect to the end page
+      await logAnswer(questions[currentQuestionIndex].id, currentAnswer, responderId);
+      router.push('/end');
     }
   };
 
@@ -73,14 +75,14 @@ export default function Survey() {
   );
 }
 
-async function logAnswer(question_id: string, answer: string | string[] | null) {
+async function logAnswer(question_id: string, answer: string | string[] | null, responderId: number) {
   try {
     const response = await fetch('/api/survey', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ question_id, answer }),
+      body: JSON.stringify({ question_id, answer, responderId }),
     });
 
     if (!response.ok) {

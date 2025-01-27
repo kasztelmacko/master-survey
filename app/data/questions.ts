@@ -113,15 +113,15 @@ export const questions: Question[] = [
       },
     ],
   },
-  // {
-  //   id: '9',
-  //   type: 'dce',
-  //   question: 'Jakie marki fast-food znasz z całego świata?',
-  //   questionId: '1',
-  //   respondentId: 1,
-  // },
   {
-    id: "9",
+    id: '10',
+    type: 'dce',
+    question: 'Jakie marki fast-food znasz z całego świata?',
+    questionId: '1',
+    respondentId: 1,
+  },
+  {
+    id: "11",
     type: "multiple-choice",
     question: "W których z wymienionych restauracji fast-food miałeś/miałaś okazję zjeść?",
     options: [

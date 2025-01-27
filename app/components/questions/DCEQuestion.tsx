@@ -1,25 +1,28 @@
-// components/DCEQuestion.tsx
-
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import ItemCard from '../items/ItemCard';
 import { supabase } from '@/lib/supabaseClient';
 import { brands } from '@/app/data/brands';
 
 interface DCEQuestionProps {
-  questionId: string; // ID of the question to fetch data for
-  respondentId: number; // ID of the respondent
   onAnswer: (answer: string) => void; // Callback for when an answer is selected
 }
 
-export default function DCEQuestion({ questionId, respondentId, onAnswer }: DCEQuestionProps) {
+export default function DCEQuestion({ onAnswer }: DCEQuestionProps) {
   const [options, setOptions] = useState<any[]>([]); // State to store fetched options
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null); // State to track selected answer
+
+  const searchParams = useSearchParams();
+  const questionId = searchParams.get('questionId');
+  const respondentId = searchParams.get('respondentId');
 
   // Fetch options from Supabase based on respondent_id and question_id
   useEffect(() => {
     const fetchOptions = async () => {
+      if (!questionId || !respondentId) return;
+
       try {
         const { data, error } = await supabase
           .from('CBCSurvey')
