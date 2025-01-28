@@ -1,12 +1,38 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Home() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleStartSurvey = () => {
-    router.push("/survey");
+  const handleStartSurvey = async () => {
+    setIsLoading(true);
+
+    try {
+      const respondentId = '1';
+      const response = await fetch(`/api/survey?respondentId=${respondentId}`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch observations');
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        localStorage.setItem('surveyObservations', JSON.stringify(data.data));
+        router.push("/survey");
+      } else {
+        console.error('Error:', data.error);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -45,9 +71,10 @@ export default function Home() {
 
         <button
           onClick={handleStartSurvey}
+          disabled={isLoading}
           className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
-          Rozpocznij ankietę
+          {isLoading ? 'Ładowanie...' : 'Rozpocznij ankietę'}
         </button>
       </main>
     </div>

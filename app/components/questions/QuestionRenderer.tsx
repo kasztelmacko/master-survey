@@ -12,9 +12,10 @@ interface QuestionRendererProps {
   question: Question;
   onAnswer: (answer: string | string[]) => void;
   onAllAnswered?: (allAnswered: boolean) => void;
+  observations?: any[];
 }
 
-export default function QuestionRenderer({ question, onAnswer, onAllAnswered  }: QuestionRendererProps) {
+export default function QuestionRenderer({ question, onAnswer, onAllAnswered, observations }: QuestionRendererProps) {
   switch (question.type) {
     case 'single-choice':
       return <SingleChoiceQuestion question={question} onAnswer={onAnswer} />;
@@ -27,7 +28,7 @@ export default function QuestionRenderer({ question, onAnswer, onAllAnswered  }:
     case 'multiple-input':
       return <MultipleInputQuestion question={question} onAnswer={onAnswer} onAllAnswered={onAllAnswered!} />;
     case 'dce':
-      return <DCEQuestion questionId={question.questionId} respondentId={question.respondentId} onAnswer={onAnswer} />;
+      return <DCEQuestion question={question} observations={observations!} onAnswer={onAnswer} />;
     default:
       return null;
   }

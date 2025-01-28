@@ -1,4 +1,4 @@
-import { Question } from '../types';
+import { Question, DCEAlternative } from '../types';
 import { brands } from './brands';
 
 export const questions: Question[] = [
@@ -116,9 +116,10 @@ export const questions: Question[] = [
   {
     id: '10',
     type: 'dce',
-    question: 'Jakie marki fast-food znasz z całego świata?',
-    questionId: '1',
-    respondentId: 1,
+    question: 'Który produkt wybierasz?',
+    questionId: 1,
+    totalQuestions: 8,
+    alternatives: [] as DCEAlternative[],
   },
   {
     id: "11",

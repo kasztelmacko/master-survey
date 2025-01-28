@@ -1,83 +1,122 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import ItemCard from '../items/ItemCard';
-import { supabase } from '@/lib/supabaseClient';
 import { brands } from '@/app/data/brands';
+import { items } from '@/app/data/items';
+
+interface Observation {
+  alternative_id: string;
+  brand: string;
+  kcal: number;
+  gram: number;
+  price: number;
+  question_id: number;
+  type_burger_classic?: boolean;
+  type_burger_premium?: boolean;
+  type_bundle_classic?: boolean;
+  type_bundle_premium?: boolean;
+}
 
 interface DCEQuestionProps {
-  onAnswer: (answer: string) => void; // Callback for when an answer is selected
+  onAnswer: (answer: string) => void;
 }
 
 export default function DCEQuestion({ onAnswer }: DCEQuestionProps) {
-  const [options, setOptions] = useState<any[]>([]); // State to store fetched options
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null); // State to track selected answer
+  const [observations, setObservations] = useState<Observation[]>([]);
+  const [options, setOptions] = useState<any[]>([]);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
 
   const searchParams = useSearchParams();
-  const questionId = searchParams.get('questionId');
-  const respondentId = searchParams.get('respondentId');
+  const router = useRouter();
+  const questionIdParam = searchParams.get('questionId');
+  const questionId = questionIdParam ? parseInt(questionIdParam) : 1;
 
-  // Fetch options from Supabase based on respondent_id and question_id
+  const typeKeyMap: Record<string, keyof typeof items['mcdonalds']> = {
+    type_burger_classic: 'burger_classic',
+    type_burger_premium: 'burger_premium',
+    type_bundle_classic: 'bundle_classic',
+    type_bundle_premium: 'bundle_premium',
+  };
+
   useEffect(() => {
-    const fetchOptions = async () => {
-      if (!questionId || !respondentId) return;
+    // Retrieve the observations from localStorage
+    const storedObservations = localStorage.getItem('surveyObservations');
+    if (storedObservations) {
+      setObservations(JSON.parse(storedObservations));
+    }
+  }, []);
 
-      try {
-        const { data, error } = await supabase
-          .from('CBCSurvey')
-          .select('*')
-          .eq('respondent_id', respondentId)
-          .eq('question_id', questionId);
+  useEffect(() => {
+    if (!observations) return;
 
-        if (error) {
-          throw error;
+    console.log('Current Observations:', observations);
+    console.log('Filtering by Question ID:', questionId);
+
+    const filteredOptions = observations
+      .filter((observation) => observation.question_id === questionId)
+      .map((observation) => {
+        const brandKey = observation.brand.toLowerCase().replace(/\s+/g, '') as keyof typeof items;
+        const brandData = brands[brandKey];
+
+        if (!brandData) {
+          console.warn(`No brand data found for key: ${brandKey}`);
+          return null;
         }
 
-        if (data) {
-          const mappedOptions = data.map((option) => {
-            const brandKey = option.data.brand.toLowerCase().replace(/\s+/g, '');
-            const brandData = brands[brandKey as keyof typeof brands];
-
-            return {
-              ...option,
-              data: {
-                ...option.data,
-                main_color: brandData?.main_color || '#ffffff', // Default to white if brand not found
-                brand_logo: brandData?.brand_logo || '', // Default to empty if brand not found
-              },
-            };
-          });
-
-          setOptions(mappedOptions); // Set the mapped options
+        const itemTypeKey = Object.keys(typeKeyMap).find((key) => observation[key as keyof Observation]);
+        if (!itemTypeKey) {
+          console.warn('No matching item type key found for observation:', observation);
+          return null;
         }
-      } catch (error) {
-        console.error('Error fetching options:', error);
-      }
-    };
 
-    fetchOptions();
-  }, [questionId, respondentId]);
+        const itemData = items[brandKey]?.[typeKeyMap[itemTypeKey]];
 
-  // Handle answer selection
+        if (!itemData) {
+          console.warn(`No item data found for type: ${typeKeyMap[itemTypeKey]} under brand: ${brandKey}`);
+        }
+
+        return {
+          id: observation.alternative_id,
+          data: {
+            name: itemData?.name || 'Unknown Item',
+            description: itemData?.description || '',
+            src: itemData?.img_url || '',
+            kcal: observation.kcal,
+            gram: observation.gram,
+            main_color: brandData?.main_color || '#ffffff',
+            brand_logo: brandData?.brand_logo || '',
+            price: observation.price,
+          },
+        };
+      })
+      .filter(Boolean);
+
+    console.log('Filtered Options:', filteredOptions);
+    setOptions(filteredOptions);
+  }, [observations, questionId]);
+
   const handleAnswer = (answer: string) => {
     setSelectedAnswer(answer);
+    console.log('Selected Answer:', answer);
     onAnswer(answer);
+  };
+
+  const handleNextQuestion = () => {
+    console.log('Navigating to next question:', questionId + 1);
+    router.push(`?questionId=${questionId + 1}`);
   };
 
   return (
     <div className="space-y-4">
-      {/* Question Text */}
       <h2 className="text-2xl font-semibold text-text">Which product do you prefer?</h2>
 
-      {/* Display options as ItemCards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {options.map((option) => (
           <div
             key={option.id}
-            className={`cursor-pointer ${
-              selectedAnswer === option.id ? 'ring-2 ring-primary' : ''
-            }`}
+            className={`cursor-pointer ${selectedAnswer === option.id ? 'ring-2 ring-primary' : ''}`}
             onClick={() => handleAnswer(option.id)}
           >
             <ItemCard
@@ -93,6 +132,14 @@ export default function DCEQuestion({ onAnswer }: DCEQuestionProps) {
             />
           </div>
         ))}
+      </div>
+
+      <div className="flex justify-between pt-4">
+        {options.length > 0 && (
+          <button className="btn btn-primary" onClick={handleNextQuestion}>
+            Next
+          </button>
+        )}
       </div>
     </div>
   );

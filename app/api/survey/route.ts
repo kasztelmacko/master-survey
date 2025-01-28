@@ -15,7 +15,6 @@ export async function POST(request: Request) {
 
     console.log('Received answer:', { question_id, answer, responderId });
 
-    // Return a success response
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error logging answer:', error);
@@ -28,25 +27,36 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    // Extract query parameters
     const { searchParams } = new URL(request.url);
-    const questionId = searchParams.get('questionId');
     const respondentId = searchParams.get('respondentId');
 
-    // Validate input
-    if (!questionId || !respondentId) {
+    if (!respondentId) {
       return NextResponse.json(
-        { success: false, error: 'Missing questionId or respondentId' },
+        { success: false, error: 'Missing or respondentId' },
         { status: 400 }
       );
     }
 
-    // Fetch rows from Supabase based on respondentId and questionId
     const { data: observations, error } = await supabase
-      .from('CBCSurvey') // Replace with your table name
-      .select('*') // Fetch all columns
-      .eq('respondent_id', respondentId) // Filter by respondent_id
-      .eq('question_id', questionId); // Filter by question_id
+      .from('CBCSurvey')
+      .select(
+        `
+        alternative_id,
+        brand,
+        gram,
+        kcal,
+        no_choice,
+        observation_id,
+        price,
+        question_id,
+        respondent_id,
+        type_bundle_classic,
+        type_bundle_premium,
+        type_burger_classic,
+        type_burger_premium
+        `
+      )
+      .eq('respondent_id', respondentId);
 
     if (error) {
       throw error;
@@ -54,7 +64,6 @@ export async function GET(request: Request) {
 
     console.log('Fetched observations:', observations);
 
-    // Check if observations were found
     if (!observations || observations.length === 0) {
       return NextResponse.json(
         { success: false, error: 'No observations found for the given respondentId and questionId' },

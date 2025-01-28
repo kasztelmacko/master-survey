@@ -17,6 +17,20 @@ interface Item {
   [key: string]: any;
 }
 
+export interface DCEAlternative {
+  id: string;
+  data: {
+    name: string;
+    description?: string;
+    src: string;
+    kcal?: number;
+    gram?: number;
+    main_color?: string;
+    brand_logo?: string;
+    price?: number;
+  };
+}
+
 export interface BaseQuestion {
   id: string;
   type: QuestionType;
@@ -55,8 +69,9 @@ export interface InputMultipleQuestion extends BaseQuestion {
 
 export interface DCEQuestion extends BaseQuestion {
   type: 'dce';
-  questionId: string;
-  respondentId: number;
+  questionId: number;
+  alternatives: DCEAlternative[];
+  totalQuestions: number;
 }
 
 export type Question =
