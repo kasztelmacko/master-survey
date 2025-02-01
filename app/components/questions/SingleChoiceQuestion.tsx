@@ -20,7 +20,7 @@ export default function SingleChoiceQuestion({ question, onAnswer }: SingleChoic
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full max-w-2xl mx-auto">
       {/* Question Text */}
       <h2 className="text-2xl font-semibold text-text">{question.question}</h2>
 

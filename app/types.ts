@@ -14,6 +14,7 @@ interface Item {
   main_color?: string;
   brand_logo?: string;
   price?: number;
+  no_choice?: boolean;
   [key: string]: any;
 }
 

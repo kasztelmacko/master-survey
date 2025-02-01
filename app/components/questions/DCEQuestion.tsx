@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import ItemCard from '../items/ItemCard';
+import NoChoice from '../items/NoChoice';
 import { brands } from '@/app/data/brands';
 import { items } from '@/app/data/items';
 
@@ -17,21 +17,18 @@ interface Observation {
   type_burger_premium?: boolean;
   type_bundle_classic?: boolean;
   type_bundle_premium?: boolean;
+  no_choice?: number;
 }
 
 interface DCEQuestionProps {
-  onAnswer: (answer: string) => void;
+  onAnswer: (answers: Record<number, string>) => void;  // Updated to handle answers for all questions
 }
 
 export default function DCEQuestion({ onAnswer }: DCEQuestionProps) {
   const [observations, setObservations] = useState<Observation[]>([]);
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});  // Track answers for all questions
   const [options, setOptions] = useState<any[]>([]);
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const questionIdParam = searchParams.get('questionId');
-  const questionId = questionIdParam ? parseInt(questionIdParam) : 1;
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);  // Track the current question
 
   const typeKeyMap: Record<string, keyof typeof items['mcdonalds']> = {
     type_burger_classic: 'burger_classic',
@@ -40,107 +37,150 @@ export default function DCEQuestion({ onAnswer }: DCEQuestionProps) {
     type_bundle_premium: 'bundle_premium',
   };
 
+  // Load observations from localStorage
   useEffect(() => {
-    // Retrieve the observations from localStorage
     const storedObservations = localStorage.getItem('surveyObservations');
     if (storedObservations) {
       setObservations(JSON.parse(storedObservations));
     }
   }, []);
 
+  // Filter options and group them by question_id
   useEffect(() => {
     if (!observations) return;
 
-    console.log('Current Observations:', observations);
-    console.log('Filtering by Question ID:', questionId);
+    const groupedOptions: Record<number, any[]> = {};
 
-    const filteredOptions = observations
-      .filter((observation) => observation.question_id === questionId)
-      .map((observation) => {
-        const brandKey = observation.brand.toLowerCase().replace(/\s+/g, '') as keyof typeof items;
-        const brandData = brands[brandKey];
-
-        if (!brandData) {
-          console.warn(`No brand data found for key: ${brandKey}`);
-          return null;
-        }
-
-        const itemTypeKey = Object.keys(typeKeyMap).find((key) => observation[key as keyof Observation]);
-        if (!itemTypeKey) {
-          console.warn('No matching item type key found for observation:', observation);
-          return null;
-        }
-
-        const itemData = items[brandKey]?.[typeKeyMap[itemTypeKey]];
-
-        if (!itemData) {
-          console.warn(`No item data found for type: ${typeKeyMap[itemTypeKey]} under brand: ${brandKey}`);
-        }
-
-        return {
+    observations.forEach((observation) => {
+      // Handle 'no_choice' case first
+      if (observation.no_choice === 1) {
+        const option = {
           id: observation.alternative_id,
-          data: {
-            name: itemData?.name || 'Unknown Item',
-            description: itemData?.description || '',
-            src: itemData?.img_url || '',
-            kcal: observation.kcal,
-            gram: observation.gram,
-            main_color: brandData?.main_color || '#ffffff',
-            brand_logo: brandData?.brand_logo || '',
-            price: observation.price,
-          },
+          question_id: observation.question_id,
+          noChoice: true,
         };
-      })
-      .filter(Boolean);
+        if (!groupedOptions[observation.question_id]) {
+          groupedOptions[observation.question_id] = [];
+        }
+        groupedOptions[observation.question_id].push(option);
+        return; // Skip further processing for this observation
+      }
 
-    console.log('Filtered Options:', filteredOptions);
-    setOptions(filteredOptions);
-  }, [observations, questionId]);
+      // Handle other types for non 'no_choice' cases
+      const brandKey = observation.brand.toLowerCase().replace(/\s+/g, '') as keyof typeof items;
+      const brandData = brands[brandKey];
 
-  const handleAnswer = (answer: string) => {
-    setSelectedAnswer(answer);
-    console.log('Selected Answer:', answer);
-    onAnswer(answer);
+      if (!brandData) {
+        console.warn(`No brand data found for key: ${brandKey}`);
+        return;
+      }
+
+      const itemTypeKey = Object.keys(typeKeyMap).find((key) => observation[key as keyof Observation]);
+      if (!itemTypeKey) {
+        console.warn('No matching item type key found for observation:', observation);
+        return;
+      }
+
+      const itemData = items[brandKey]?.[typeKeyMap[itemTypeKey]];
+
+      if (!itemData) {
+        console.warn(`No item data found for type: ${typeKeyMap[itemTypeKey]} under brand: ${brandKey}`);
+      }
+
+      const option = {
+        id: observation.alternative_id,
+        question_id: observation.question_id,
+        data: {
+          name: itemData?.name || 'Unknown Item',
+          description: itemData?.description || '',
+          src: itemData?.img_url || '',
+          kcal: observation.kcal,
+          gram: observation.gram,
+          main_color: brandData?.main_color || '#ffffff',
+          brand_logo: brandData?.brand_logo || '',
+          price: observation.price,
+        },
+        noChoice: false,
+      };
+
+      if (!groupedOptions[observation.question_id]) {
+        groupedOptions[observation.question_id] = [];
+      }
+
+      groupedOptions[observation.question_id].push(option);
+    });
+
+    const finalOptions = Object.values(groupedOptions).map((options) => options);
+    setOptions(finalOptions);
+  }, [observations]);
+
+  const handleAnswer = (questionId: number, answer: string) => {
+    setSelectedAnswers((prev) => ({
+      ...prev,
+      [questionId]: answer,
+    }));
   };
 
-  const handleNextQuestion = () => {
-    console.log('Navigating to next question:', questionId + 1);
-    router.push(`?questionId=${questionId + 1}`);
+  const handleNext = () => {
+    if (currentQuestionIndex < options.length - 1) {
+      setCurrentQuestionIndex((prev) => prev + 1);
+    }
   };
+
+  const currentOptions = options[currentQuestionIndex] || [];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full max-w-6xl mx-auto">
       <h2 className="text-2xl font-semibold text-text">Which product do you prefer?</h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {options.map((option) => (
-          <div
-            key={option.id}
-            className={`cursor-pointer ${selectedAnswer === option.id ? 'ring-2 ring-primary' : ''}`}
-            onClick={() => handleAnswer(option.id)}
-          >
-            <ItemCard
-              src={option.data.src}
-              alt={option.data.name}
-              name={option.data.name}
-              description={option.data.description}
-              kcal={option.data.kcal}
-              gram={option.data.gram}
-              main_color={option.data.main_color}
-              brand_logo={option.data.brand_logo}
-              price={option.data.price}
-            />
-          </div>
-        ))}
+      <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          {currentOptions.map((option: any) => (
+            <div
+              key={option.id}
+              className={`cursor-pointer ${selectedAnswers[option.question_id] === option.id ? 'ring-2 ring-primary' : ''}`}
+              onClick={() => handleAnswer(option.question_id, option.id)}
+            >
+              {option.noChoice ? (
+                <NoChoice />
+              ) : (
+                <ItemCard
+                  src={option.data.src}
+                  alt={option.data.name}
+                  name={option.data.name}
+                  description={option.data.description}
+                  kcal={option.data.kcal}
+                  gram={option.data.gram}
+                  main_color={option.data.main_color}
+                  brand_logo={option.data.brand_logo}
+                  price={option.data.price}
+                />
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="flex justify-between pt-4">
-        {options.length > 0 && (
-          <button className="btn btn-primary" onClick={handleNextQuestion}>
-            Next
+        {/* Show next button */}
+        {selectedAnswers[currentOptions[0]?.question_id] && (
+          <button className="btn btn-primary" onClick={handleNext}>
+            Dalej
           </button>
         )}
       </div>
+
+      {/* Submit button when all questions are answered */}
+      {Object.keys(selectedAnswers).length === options.length && (
+        <div className="pt-4">
+          <button
+            className="btn btn-primary"
+            onClick={() => console.log('Survey submitted with answers:', selectedAnswers)}
+          >
+            Submit
+          </button>
+        </div>
+      )}
     </div>
   );
 }

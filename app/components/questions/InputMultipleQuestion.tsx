@@ -26,7 +26,7 @@ export default function InputMultipleQuestion({ question, onAnswer }: InputMulti
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full max-w-2xl mx-auto">
       <h2 className="text-2xl font-semibold text-text">{question.question}</h2>
 
       {question.items && (

@@ -44,9 +44,9 @@ export default function Survey() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-background">
-      <div className="w-full max-w-2xl space-y-8">
+      <div className="w-full space-y-8">
         {/* Progress Indicator */}
-        <div className="text-sm text-text/80">
+        <div className="text-sm text-text/80 max-w-2xl mx-auto">
           Pytanie {currentQuestionIndex + 1} na {questions.length}
         </div>
 
@@ -59,7 +59,7 @@ export default function Survey() {
         />
 
         {/* Navigation Buttons */}
-        <div className="flex justify-end">
+        <div className="flex w-full max-w-2xl mx-auto justify-end">
           <button
             onClick={handleNext}
             className={`px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-opacity ${
