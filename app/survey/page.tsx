@@ -85,7 +85,7 @@ export default function Survey() {
 
         {/* Navigation Buttons */}
         <div className="flex w-full max-w-2xl mx-auto justify-end">
-          {(!isLastQuestion && currentQuestion.type !== 'dce') && (
+          {!isLastQuestion && (
             <button
               onClick={handleNext}
               className={`px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-opacity ${
@@ -97,17 +97,7 @@ export default function Survey() {
             </button>
           )}
 
-          {/* Show only when it's the final DCE question */}
-          {currentQuestion.type === 'dce' && isLastQuestion && dceCompleted && (
-            <button
-              onClick={handleNext}
-              className={`px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-opacity`}
-            >
-              Dalej
-            </button>
-          )}
-
-          {isLastQuestion && currentQuestion.type !== 'dce' && (
+          {isLastQuestion && (
             <button
               onClick={handleNext}
               className={`px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-opacity ${
