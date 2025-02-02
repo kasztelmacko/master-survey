@@ -21,14 +21,16 @@ interface Observation {
 }
 
 interface DCEQuestionProps {
-  onAnswer: (answers: Record<number, string>) => void;  // Updated to handle answers for all questions
+  responderId: number;
+  onAnswer: (answers: Record<number, string[]>) => void;
+  onDCECompleted: (completed: boolean) => void;
 }
 
-export default function DCEQuestion({ onAnswer }: DCEQuestionProps) {
+export default function DCEQuestion({ onAnswer, responderId, onDCECompleted }: DCEQuestionProps) {
   const [observations, setObservations] = useState<Observation[]>([]);
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});  // Track answers for all questions
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string[]>>({});
   const [options, setOptions] = useState<any[]>([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);  // Track the current question
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
 
   const typeKeyMap: Record<string, keyof typeof items['mcdonalds']> = {
     type_burger_classic: 'burger_classic',
@@ -37,7 +39,6 @@ export default function DCEQuestion({ onAnswer }: DCEQuestionProps) {
     type_bundle_premium: 'bundle_premium',
   };
 
-  // Load observations from localStorage
   useEffect(() => {
     const storedObservations = localStorage.getItem('surveyObservations');
     if (storedObservations) {
@@ -45,139 +46,123 @@ export default function DCEQuestion({ onAnswer }: DCEQuestionProps) {
     }
   }, []);
 
-  // Filter options and group them by question_id
   useEffect(() => {
     if (!observations) return;
 
     const groupedOptions: Record<number, any[]> = {};
-
     observations.forEach((observation) => {
-      // Handle 'no_choice' case first
-      if (observation.no_choice === 1) {
-        const option = {
-          id: observation.alternative_id,
-          question_id: observation.question_id,
-          noChoice: true,
-        };
-        if (!groupedOptions[observation.question_id]) {
-          groupedOptions[observation.question_id] = [];
-        }
-        groupedOptions[observation.question_id].push(option);
-        return; // Skip further processing for this observation
-      }
-
-      // Handle other types for non 'no_choice' cases
-      const brandKey = observation.brand.toLowerCase().replace(/\s+/g, '') as keyof typeof items;
-      const brandData = brands[brandKey];
-
-      if (!brandData) {
-        console.warn(`No brand data found for key: ${brandKey}`);
-        return;
-      }
-
-      const itemTypeKey = Object.keys(typeKeyMap).find((key) => observation[key as keyof Observation]);
-      if (!itemTypeKey) {
-        console.warn('No matching item type key found for observation:', observation);
-        return;
-      }
-
-      const itemData = items[brandKey]?.[typeKeyMap[itemTypeKey]];
-
-      if (!itemData) {
-        console.warn(`No item data found for type: ${typeKeyMap[itemTypeKey]} under brand: ${brandKey}`);
-      }
-
       const option = {
         id: observation.alternative_id,
         question_id: observation.question_id,
-        data: {
-          name: itemData?.name || 'Unknown Item',
-          description: itemData?.description || '',
-          src: itemData?.img_url || '',
-          kcal: observation.kcal,
-          gram: observation.gram,
-          main_color: brandData?.main_color || '#ffffff',
-          brand_logo: brandData?.brand_logo || '',
-          price: observation.price,
-        },
-        noChoice: false,
+        noChoice: observation.no_choice === 1,
+        data: !observation.no_choice ? getObservationData(observation) : undefined,
       };
 
       if (!groupedOptions[observation.question_id]) {
         groupedOptions[observation.question_id] = [];
       }
-
       groupedOptions[observation.question_id].push(option);
     });
 
-    const finalOptions = Object.values(groupedOptions).map((options) => options);
-    setOptions(finalOptions);
+    setOptions(Object.values(groupedOptions));
   }, [observations]);
 
-  const handleAnswer = (questionId: number, answer: string) => {
+  const getObservationData = (observation: Observation) => {
+    const brandKey = observation.brand.toLowerCase().replace(/\s+/g, '') as keyof typeof items;
+    const brandData = brands[brandKey];
+    const itemTypeKey = Object.keys(typeKeyMap).find((key) => observation[key as keyof Observation]);
+
+    if (!brandData || !itemTypeKey) return null;
+
+    const itemData = items[brandKey]?.[typeKeyMap[itemTypeKey]];
+    return {
+      name: itemData?.name || 'Unknown Item',
+      description: itemData?.description || '',
+      src: itemData?.img_url || '',
+      kcal: observation.kcal,
+      gram: observation.gram,
+      main_color: brandData?.main_color || '#ffffff',
+      brand_logo: brandData?.brand_logo || '',
+      price: observation.price,
+    };
+  };
+
+  const handleAnswer = (questionId: number, answerId: string) => {
     setSelectedAnswers((prev) => ({
       ...prev,
-      [questionId]: answer,
+      [questionId]: [answerId],
     }));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    const currentQuestion = options[currentQuestionIndex];
+    if (currentQuestion) {
+      const questionId = String(currentQuestion[0].question_id);
+      const answerIds = selectedAnswers[currentQuestion[0].question_id] || [];
+
+      if (answerIds.length > 0) {
+        onAnswer(selectedAnswers);
+      }
+    }
+
     if (currentQuestionIndex < options.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
+    } else {
+      onDCECompleted(true);
     }
   };
 
   const currentOptions = options[currentQuestionIndex] || [];
+  const isAnswered = selectedAnswers[currentOptions[0]?.question_id]?.length > 0;
+  const isLastQuestion = currentQuestionIndex === options.length - 1;
+
+  useEffect(() => {
+    const allAnswered = currentOptions.every(
+      (option: any) => selectedAnswers[option.question_id]?.length > 0
+    );
+    onDCECompleted(allAnswered);
+  }, [selectedAnswers, currentOptions, onDCECompleted]);
 
   return (
     <div className="space-y-4 w-full max-w-6xl mx-auto">
-      <h2 className="text-2xl font-semibold text-text">Which product do you prefer?</h2>
+      <h2 className="text-2xl font-semibold flex w-full max-w-2xl mx-auto text-text">
+        Which product do you prefer?
+      </h2>
 
-      <div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {currentOptions.map((option: any) => (
-            <div
-              key={option.id}
-              className={`cursor-pointer ${selectedAnswers[option.question_id] === option.id ? 'ring-2 ring-primary' : ''}`}
-              onClick={() => handleAnswer(option.question_id, option.id)}
-            >
-              {option.noChoice ? (
-                <NoChoice />
-              ) : (
-                <ItemCard
-                  src={option.data.src}
-                  alt={option.data.name}
-                  name={option.data.name}
-                  description={option.data.description}
-                  kcal={option.data.kcal}
-                  gram={option.data.gram}
-                  main_color={option.data.main_color}
-                  brand_logo={option.data.brand_logo}
-                  price={option.data.price}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex justify-between pt-4">
-        {/* Show next button */}
-        {selectedAnswers[currentOptions[0]?.question_id] && (
-          <button className="btn btn-primary" onClick={handleNext}>
-            Dalej
-          </button>
-        )}
-      </div>
-
-      {/* Submit button when all questions are answered */}
-      {Object.keys(selectedAnswers).length === options.length && (
-        <div className="pt-4">
-          <button
-            className="btn btn-primary"
-            onClick={() => console.log('Survey submitted with answers:', selectedAnswers)}
+      <div className="p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        {currentOptions.map((option: any) => (
+          <div
+            key={option.id}
+            className={`cursor-pointer ${selectedAnswers[option.question_id]?.includes(option.id) ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => handleAnswer(option.question_id, option.id)}
           >
-            Submit
+            {option.noChoice ? (
+              <NoChoice />
+            ) : (
+              <ItemCard
+                src={option.data?.src}
+                alt={option.data?.name}
+                name={option.data?.name}
+                description={option.data?.description}
+                kcal={option.data?.kcal}
+                gram={option.data?.gram}
+                main_color={option.data?.main_color}
+                brand_logo={option.data?.brand_logo}
+                price={option.data?.price}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {!isLastQuestion && (
+        <div className="flex w-full max-w-2xl mx-auto justify-end">
+          <button
+            onClick={handleNext}
+            className={`px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-opacity ${!isAnswered ? 'opacity-50 pointer-events-none' : ''}`}
+            disabled={!isAnswered}
+          >
+            Dalej
           </button>
         </div>
       )}

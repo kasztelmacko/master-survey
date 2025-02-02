@@ -70,9 +70,6 @@ export interface InputMultipleQuestion extends BaseQuestion {
 
 export interface DCEQuestion extends BaseQuestion {
   type: 'dce';
-  questionId: number;
-  alternatives: DCEAlternative[];
-  totalQuestions: number;
 }
 
 export type Question =

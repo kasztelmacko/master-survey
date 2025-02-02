@@ -117,9 +117,6 @@ export const questions: Question[] = [
     id: '10',
     type: 'dce',
     question: 'Który produkt wybierasz?',
-    questionId: 1,
-    totalQuestions: 8,
-    alternatives: [] as DCEAlternative[],
   },
   {
     id: "11",
