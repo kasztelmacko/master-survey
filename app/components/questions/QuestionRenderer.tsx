@@ -12,15 +12,12 @@ interface QuestionRendererProps {
   question: Question;
   onAnswer: (answer: string | string[]) => void;
   onAllAnswered?: (allAnswered: boolean) => void;
-  observations?: any[];
-  onDCECompleted?: (completed: boolean) => void;
 }
 
 export default function QuestionRenderer({ 
   question, 
   onAnswer, 
   onAllAnswered, 
-  onDCECompleted
 }: QuestionRendererProps) {
   switch (question.type) {
     case 'single-choice':
@@ -34,7 +31,7 @@ export default function QuestionRenderer({
     case 'multiple-input':
       return <MultipleInputQuestion question={question} onAnswer={onAnswer} onAllAnswered={onAllAnswered!} />;
     case 'dce':
-      return <DCEQuestion question={question} onAnswer={onAnswer} onDCECompleted={onDCECompleted!} />;
+      return <DCEQuestion question={question} onAnswer={(answers) => onAnswer(answers as any)} onAllAnswered={onAllAnswered!}/>;
     default:
       return null;
   }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback  } from 'react';
 import { useRouter } from 'next/navigation';
 import { questions } from '../data/questions';
 import QuestionRenderer from '../components/questions/QuestionRenderer';
@@ -9,48 +9,31 @@ export default function Survey() {
   const router = useRouter();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
-  const [dceAnswers, setDceAnswers] = useState<Record<string, string | string[]>>({});
   const [currentAnswer, setCurrentAnswer] = useState<string | string[] | null>(null);
-  const [dceCompleted, setDceCompleted] = useState(false);
-  const [allLogosAnswered, setAllLogosAnswered] = useState(false);
+  const [allAnswersProvided, setAllAnswersProvided] = useState(false);
 
   const responderId = 1;
 
-  useEffect(() => {
-    if (currentAnswer && questions[currentQuestionIndex].type === 'dce') {
-      setDceCompleted(true);
-    }
-  }, [currentAnswer, currentQuestionIndex]);
-
-  const handleAnswer = (questionId: string, answer: string | string[]) => {
+  const handleAnswer = useCallback((questionId: string, answer: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
-
-    if (questionId.startsWith('dce')) {
-      setDceAnswers((prev) => ({ ...prev, [questionId]: answer }));
-    }
-
     setCurrentAnswer(answer);
-  };
+  }, []);
 
-  const handleAllLogosAnswered = (allAnswered: boolean) => {
-    setAllLogosAnswered(allAnswered);
-  };
-
-  const handleDCECompleted = (completed: boolean) => {
-    if (currentQuestion.type === 'dce' && completed) {
-      setDceCompleted(true);
-    }
-  };
+  const handleAllAnswersProvided = useCallback((allAnswered: boolean) => {
+    setAllAnswersProvided(allAnswered);
+  }, []);
 
   const handleNext = async () => {
     if (currentQuestionIndex < questions.length - 1) {
       await logAnswer(questions[currentQuestionIndex].id, currentAnswer, responderId);
-
+  
       setCurrentQuestionIndex((prev) => prev + 1);
       setCurrentAnswer(null);
-      setAllLogosAnswered(false);
+      setAllAnswersProvided(false);
     } else {
-      await logAnswer(questions[currentQuestionIndex].id, currentAnswer, responderId);
+      if (currentAnswer !== null) {
+        await logAnswer(questions[currentQuestionIndex].id, currentAnswer, responderId);
+      }
       router.push('/end');
     }
   };
@@ -58,13 +41,10 @@ export default function Survey() {
   const currentQuestion = questions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
-
-    const isNextButtonDisabled =
-    currentQuestion.type === 'multiple-input'
-      ? !allLogosAnswered
-      : currentQuestion.type === 'dce'
-      ? currentQuestionIndex !== questions.length - 1 && !dceCompleted
-      : !currentAnswer;
+  const isNextButtonDisabled =
+  currentQuestion.type === 'multiple-input' || currentQuestion.type === 'dce'
+    ? !allAnswersProvided
+    : !currentAnswer;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-background">
@@ -79,31 +59,26 @@ export default function Survey() {
           key={currentQuestion.id}
           question={currentQuestion}
           onAnswer={(answer) => handleAnswer(currentQuestion.id, answer)}
-          onAllAnswered={handleAllLogosAnswered}
-          onDCECompleted={handleDCECompleted}
+          onAllAnswered={handleAllAnswersProvided}
         />
 
         {/* Navigation Buttons */}
         <div className="flex w-full max-w-2xl mx-auto justify-end">
-          {!isLastQuestion && (
+          {/* Show "Dalej" button for all questions except the last DCE question */}
+          {!isLastQuestion && !isNextButtonDisabled && (
             <button
               onClick={handleNext}
-              className={`px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-opacity ${
-                isNextButtonDisabled ? 'opacity-0 pointer-events-none' : 'opacity-100'
-              }`}
-              disabled={isNextButtonDisabled}
+              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-opacity"
             >
               Dalej
             </button>
           )}
 
-          {isLastQuestion && (
+          {/* Show "Wyślij" button for the last question */}
+          {isLastQuestion && !isNextButtonDisabled && (
             <button
               onClick={handleNext}
-              className={`px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-opacity ${
-                isNextButtonDisabled ? 'opacity-0 pointer-events-none' : 'opacity-100'
-              }`}
-              disabled={isNextButtonDisabled}
+              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-opacity"
             >
               Wyślij
             </button>
