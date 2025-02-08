@@ -11,10 +11,13 @@ export async function POST(request: Request) {
     );
   }
 
+  const changeTimestamp = new Date().toISOString();
+  console.log('Updating responder status:', { responderId, status, changeTimestamp });
+
   try {
     const { error } = await supabase
       .from('respondent_ids')
-      .update({ status})
+      .update({ status, change_timestampz: changeTimestamp })
       .eq('respondent_id', responderId);
 
     if (error) {
