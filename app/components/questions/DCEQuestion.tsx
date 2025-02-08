@@ -27,7 +27,7 @@ interface DCEQuestionProps {
     question: string;
     questions: number[];
   };
-  onAnswer: (answers: { question_id: number; alternative_id: string }[]) => void;
+  onAnswer: (answers: string[]) => void;
   onAllAnswered: (allAnswered: boolean) => void;
 }
 
@@ -39,14 +39,13 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
 
   const currentQuestionId = question.questions[currentQuestionIndex];
 
-  const typeKeyMap: Record<string, keyof typeof items['mcdonalds']> = {
+  const typeKeyMap: Record<string, string> = {
     type_burger_classic: 'burger_classic',
     type_burger_premium: 'burger_premium',
     type_bundle_classic: 'bundle_classic',
     type_bundle_premium: 'bundle_premium',
   };
 
-  // Load observations from localStorage on mount
   useEffect(() => {
     const storedObservations = localStorage.getItem('surveyObservations');
     if (storedObservations) {
@@ -54,7 +53,6 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
     }
   }, []);
 
-  // Group options by question_id when observations change
   useEffect(() => {
     if (!observations) return;
 
@@ -76,16 +74,13 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
     setOptions(groupedOptions);
   }, [observations]);
 
-  // Memoize the current options to avoid recalculating on every render
   const currentOptions = useMemo(() => options[currentQuestionId] || [], [options, currentQuestionId]);
 
-  // Memoize the allAnswered check
   const allAnswered = useMemo(
     () => question.questions.every((qid) => selectedAnswers[qid]),
     [question.questions, selectedAnswers]
   );
 
-  // Handle answer selection
   const handleAnswer = useCallback((questionId: number, alternativeId: string) => {
     setSelectedAnswers((prev) => ({
       ...prev,
@@ -93,30 +88,23 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
     }));
   }, []);
 
-  // Handle moving to the next question
   const handleNext = useCallback(() => {
     if (currentQuestionIndex < question.questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
     }
   }, [currentQuestionIndex, question.questions.length]);
 
-  // Notify parent when all answers are provided
   useEffect(() => {
     onAllAnswered(allAnswered);
   }, [allAnswered, onAllAnswered]);
 
-  // Submit answers when all questions are answered
   useEffect(() => {
     if (allAnswered) {
-      const formattedAnswers = Object.entries(selectedAnswers).map(([questionId, alternativeId]) => ({
-        question_id: parseInt(questionId),
-        alternative_id: alternativeId,
-      }));
+      const formattedAnswers = Object.values(selectedAnswers);
       onAnswer(formattedAnswers);
     }
   }, [allAnswered, selectedAnswers, onAnswer]);
 
-  // Helper function to get observation data
   const getObservationData = useCallback((observation: Observation) => {
     const brandKey = observation.brand.toLowerCase().replace(/\s+/g, '') as keyof typeof items;
     const brandData = brands[brandKey];
@@ -124,7 +112,7 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
 
     if (!brandData || !itemTypeKey) return null;
 
-    const itemData = items[brandKey]?.[typeKeyMap[itemTypeKey]];
+    const itemData = items[brandKey]?.[typeKeyMap[itemTypeKey] as keyof typeof items[keyof typeof items]];
     return {
       name: itemData?.name || 'Unknown Item',
       description: itemData?.description || '',

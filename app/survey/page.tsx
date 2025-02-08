@@ -34,6 +34,7 @@ export default function Survey() {
       if (currentAnswer !== null) {
         await logAnswer(questions[currentQuestionIndex].id, currentAnswer, responderId);
       }
+      await updateResponderStatus(responderId, 'finished');
       router.push('/end');
     }
   };
@@ -111,5 +112,26 @@ async function logAnswer(question_id: string, answer: string | string[] | null, 
     console.log('Answer logged successfully:', data);
   } catch (error) {
     console.error('Error logging answer:', error);
+  }
+}
+
+async function updateResponderStatus(responderId: number, status: string) {
+  try {
+    const response = await fetch('/api/updateResponderStatus', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ responderId, status }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update responder status');
+    }
+
+    const data = await response.json();
+    console.log('Responder status updated successfully:', data);
+  } catch (error) {
+    console.error('Error updating responder status:', error);
   }
 }
