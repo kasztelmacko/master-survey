@@ -11,7 +11,19 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      const respondentId = '1';
+      const respondentResponse = await fetch('/api/getRandomResponderId', {
+        method: 'GET',
+      });
+
+      if (!respondentResponse.ok) {
+        throw new Error('Failed to fetch respondent ID');
+      }
+
+      const respondentData = await respondentResponse.json();
+      const respondentId = respondentData.responderId;
+
+      localStorage.setItem('responderId', respondentId);
+
       const response = await fetch(`/api/survey?respondentId=${respondentId}`, {
         method: 'GET',
       });
