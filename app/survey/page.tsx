@@ -65,20 +65,24 @@ export default function Survey() {
         {/* Navigation Buttons */}
         <div className="flex w-full max-w-2xl mx-auto justify-end">
           {/* Show "Dalej" button for all questions except the last DCE question */}
-          {!isLastQuestion && !isNextButtonDisabled && (
+          {!isLastQuestion && (
             <button
               onClick={handleNext}
-              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-opacity"
+              className={`px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-opacity ${
+                isNextButtonDisabled ? 'invisible' : ''
+              }`}
             >
               Dalej
             </button>
           )}
 
           {/* Show "Wyślij" button for the last question */}
-          {isLastQuestion && !isNextButtonDisabled && (
+          {isLastQuestion && (
             <button
               onClick={handleNext}
-              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-opacity"
+              className={`px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-opacity ${
+                isNextButtonDisabled ? 'invisible' : ''
+              }`}
             >
               Wyślij
             </button>
