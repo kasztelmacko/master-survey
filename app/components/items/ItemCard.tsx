@@ -78,7 +78,7 @@ export default function ItemCard({
 
           {/* Right Side: Price */}
           <div className="text-white font-bold justify-self-end">
-            <span className="text-3xl">{price !== undefined ? price : 'XXX'}</span>
+            <span className="text-2xl">{price !== undefined ? price : 'XXX'}</span>
             <span className="text-l"> zł</span>
           </div>
         </div>

@@ -117,7 +117,7 @@ export const questions: Question[] = [
     id: '10',
     type: 'dce',
     question: 'Który produkt wybierasz?',
-    questions: [1,2,3,4,5,6]
+    questions: [1,2,3,4,5]
   },
   {
     id: "11",

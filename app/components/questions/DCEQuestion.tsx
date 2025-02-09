@@ -7,12 +7,15 @@ import { brands } from '@/app/data/brands';
 import { items } from '@/app/data/items';
 
 interface Observation {
-  alternative_id: string;
-  brand: string;
+  alternative_id: number;
   kcal: number;
   gram: number;
   price: number;
   question_id: number;
+  brand_mcdonalds?: boolean;
+  brand_burger_king?: boolean;
+  brand_max_burger?: boolean;
+  brand_wendys?: boolean;
   type_burger_classic?: boolean;
   type_burger_premium?: boolean;
   type_bundle_classic?: boolean;
@@ -44,6 +47,13 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
     type_burger_premium: 'burger_premium',
     type_bundle_classic: 'bundle_classic',
     type_bundle_premium: 'bundle_premium',
+  };
+
+  const brandKeyMap: Record<string, string> = {
+    brand_mcdonalds: 'mcdonalds',
+    brand_burger_king: 'burger_king',
+    brand_max_burger: 'max_burger',
+    brand_wendys: 'wendys',
   };
 
   useEffect(() => {
@@ -106,13 +116,18 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
   }, [allAnswered, selectedAnswers, onAnswer]);
 
   const getObservationData = useCallback((observation: Observation) => {
-    const brandKey = observation.brand.toLowerCase().replace(/\s+/g, '') as keyof typeof items;
-    const brandData = brands[brandKey];
-    const itemTypeKey = Object.keys(typeKeyMap).find((key) => observation[key as keyof Observation]);
+    const brandKey = Object.keys(brandKeyMap).find(
+      (key) => observation[key as keyof Observation] === 1
+    );
+    const itemTypeKey = Object.keys(typeKeyMap).find(
+      (key) => observation[key as keyof Observation] === 1
+    );
 
-    if (!brandData || !itemTypeKey) return null;
+    const brandData = brandKey ? brands[brandKeyMap[brandKey] as keyof typeof brands] : undefined;
+    const itemData = brandKey && itemTypeKey
+      ? items[brandKeyMap[brandKey] as keyof typeof items]?.[typeKeyMap[itemTypeKey] as keyof typeof items[keyof typeof items]]
+      : undefined;
 
-    const itemData = items[brandKey]?.[typeKeyMap[itemTypeKey] as keyof typeof items[keyof typeof items]];
     return {
       name: itemData?.name || 'Unknown Item',
       description: itemData?.description || '',
@@ -123,7 +138,7 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
       brand_logo: brandData?.brand_logo || '',
       price: observation.price,
     };
-  }, [typeKeyMap]);
+  }, [typeKeyMap, brandKeyMap]);
 
   return (
     <div className="space-y-4 w-full max-w-6xl mx-auto">

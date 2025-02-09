@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback  } from 'react';
+import { useState, useCallback, useEffect  } from 'react';
 import { useRouter } from 'next/navigation';
 import { questions } from '../data/questions';
 import QuestionRenderer from '../components/questions/QuestionRenderer';
@@ -11,8 +11,16 @@ export default function Survey() {
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [currentAnswer, setCurrentAnswer] = useState<string | string[] | null>(null);
   const [allAnswersProvided, setAllAnswersProvided] = useState(false);
+  const [responderId, setResponderId] = useState<number | null>(null);
 
-  const responderId = 1;
+  useEffect(() => {
+    const storedResponderId = localStorage.getItem('responderId');
+    if (storedResponderId) {
+      setResponderId(Number(storedResponderId));
+    } else {
+      console.error('Responder ID not found in localStorage');
+    }
+  }, []);
 
   const handleAnswer = useCallback((questionId: string, answer: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
@@ -24,6 +32,11 @@ export default function Survey() {
   }, []);
 
   const handleNext = async () => {
+    if (responderId === null) {
+      console.error('Responder ID is null');
+      return;
+    }
+
     if (currentQuestionIndex < questions.length - 1) {
       await logAnswer(questions[currentQuestionIndex].id, currentAnswer, responderId);
   

@@ -38,11 +38,10 @@ export async function GET(request: Request) {
     }
 
     const { data: observations, error } = await supabase
-      .from('CBCSurvey')
+      .from('DCESurvey')
       .select(
         `
         alternative_id,
-        brand,
         gram,
         kcal,
         no_choice,
@@ -50,6 +49,10 @@ export async function GET(request: Request) {
         price,
         question_id,
         respondent_id,
+        brand_mcdonalds,
+        brand_burger_king,
+        brand_max_burger,
+        brand_wendys,
         type_bundle_classic,
         type_bundle_premium,
         type_burger_classic,
