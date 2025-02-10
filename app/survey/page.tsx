@@ -36,18 +36,18 @@ export default function Survey() {
       console.error('Responder ID is null');
       return;
     }
-
-    if (currentQuestionIndex < questions.length - 1) {
-      await logAnswer(questions[currentQuestionIndex].id, currentAnswer, responderId);
   
+    if (currentAnswer !== null) {
+      setAnswers((prev) => ({ ...prev, [questions[currentQuestionIndex].id]: currentAnswer }));
+    }
+  
+    if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
       setCurrentAnswer(null);
       setAllAnswersProvided(false);
     } else {
-      if (currentAnswer !== null) {
-        await logAnswer(questions[currentQuestionIndex].id, currentAnswer, responderId);
-      }
       await updateResponderStatus(responderId, 'finished');
+      await sendAllAnswers(responderId, answers);
       router.push('/end');
     }
   };
@@ -107,24 +107,23 @@ export default function Survey() {
   );
 }
 
-async function logAnswer(question_id: string, answer: string | string[] | null, responderId: number) {
+async function sendAllAnswers(responderId: number, answers: Record<string, string | string[]>) {
   try {
-    const response = await fetch('/api/survey', {
+    const response = await fetch('/api/submitSurvey', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ question_id, answer, responderId }),
+      body: JSON.stringify({ responderId, answers }),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to log answer');
+      throw new Error('Failed to submit survey');
     }
 
     const data = await response.json();
-    console.log('Answer logged successfully:', data);
   } catch (error) {
-    console.error('Error logging answer:', error);
+    console.error('Error submitting survey:', error);
   }
 }
 

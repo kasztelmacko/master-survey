@@ -4,6 +4,7 @@ import { brands } from './brands';
 export const questions: Question[] = [
   {
     id: '1',
+    name: 'age',
     type: 'input',
     question: 'Ile masz lat?',
     inputType: 'number',
@@ -11,6 +12,7 @@ export const questions: Question[] = [
   },
   {
     id: '2',
+    name: 'gender',
     type: 'single-choice',
     question: 'Jaka jest twoja płeć?',
     options: [
@@ -22,6 +24,7 @@ export const questions: Question[] = [
   },
   {
     id: '3',
+    name: 'income',
     type: 'single-choice',
     question: 'Jaki jest twój miesięczny dochód?',
     options: [
@@ -34,6 +37,7 @@ export const questions: Question[] = [
   },
   {
     id: '4',
+    name: 'location',
     type: 'single-choice',
     question: 'Gdzie mieszkasz?',
     options: [
@@ -45,6 +49,7 @@ export const questions: Question[] = [
   },
   {
     id: '5',
+    name: 'fast-food-frequency',
     type: 'single-choice',
     question: 'Jak często jadasz w restauracjach typu fast-food?',
     options: [
@@ -57,6 +62,7 @@ export const questions: Question[] = [
   },
   {
     id: '6',
+    name: 'education',
     type: 'single-choice',
     question: 'Jaki jest twój poziom wykształcenia?',
     options: [
@@ -69,12 +75,14 @@ export const questions: Question[] = [
   },
   {
     id: '7',
+    name: 'brand-recall',
     type: 'input-multiple',
     inputType: 'text',
     question: 'Jakie marki fast-food znasz z całego świata?',
   },
   {
     id: '8',
+    name: 'brand-recognition',
     type: 'multiple-input',
     inputType: 'text',
     question: 'Czy rozpoznasz te marki po logo?',
@@ -91,6 +99,7 @@ export const questions: Question[] = [
   },
   {
     id: '9',
+    name: 'price-guess',
     type: 'multiple-input',
     inputType: 'number',
     question: 'Jak myślisz, ile kosztują te produkty na rynku?',
@@ -130,12 +139,14 @@ export const questions: Question[] = [
   },
   {
     id: '10',
+    name: 'dce',
     type: 'dce',
     question: 'Który produkt wybierasz?',
     questions: [1,2,3,4,5]
   },
   {
     id: "11",
+    name: "past-use",
     type: "multiple-choice",
     question: "W których z wymienionych restauracji fast-food miałeś/miałaś okazję zjeść?",
     options: [

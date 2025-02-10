@@ -34,6 +34,7 @@ export interface DCEAlternative {
 
 export interface BaseQuestion {
   id: string;
+  name: string;
   type: QuestionType;
   question: string;
   layout?: QuestionLayout;
