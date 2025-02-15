@@ -1,5 +1,3 @@
-// components/items/ItemCard.tsx
-
 import React from 'react';
 
 interface ItemCardProps {
@@ -11,7 +9,7 @@ interface ItemCardProps {
   gram?: number;
   main_color?: string;
   brand_logo?: string;
-  price?: number; // Add price prop
+  price?: number;
 }
 
 export default function ItemCard({
@@ -21,9 +19,9 @@ export default function ItemCard({
   description,
   kcal,
   gram,
-  main_color = '#ffffff', // Default to white if not provided
+  main_color = '#ffffff',
   brand_logo,
-  price, // Destructure price
+  price,
 }: ItemCardProps) {
   return (
     <div className="h-full relative group flex flex-col border rounded-lg shadow-md w-full max-w-xs mx-auto">

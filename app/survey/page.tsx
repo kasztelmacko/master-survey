@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect  } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { questions } from '../data/questions';
 import QuestionRenderer from '../components/questions/QuestionRenderer';
@@ -9,7 +9,6 @@ export default function Survey() {
   const router = useRouter();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
-  const [currentAnswer, setCurrentAnswer] = useState<string | string[] | null>(null);
   const [allAnswersProvided, setAllAnswersProvided] = useState(false);
   const [responderId, setResponderId] = useState<number | null>(null);
 
@@ -22,43 +21,39 @@ export default function Survey() {
     }
   }, []);
 
+  // Handle answer submission
   const handleAnswer = useCallback((questionId: string, answer: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
-    setCurrentAnswer(answer);
   }, []);
 
   const handleAllAnswersProvided = useCallback((allAnswered: boolean) => {
     setAllAnswersProvided(allAnswered);
   }, []);
 
-  const handleNext = async () => {
+  const handleNext = useCallback(async () => {
     if (responderId === null) {
       console.error('Responder ID is null');
       return;
     }
-  
-    if (currentAnswer !== null) {
-      setAnswers((prev) => ({ ...prev, [questions[currentQuestionIndex].id]: currentAnswer }));
-    }
-  
+
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
-      setCurrentAnswer(null);
       setAllAnswersProvided(false);
     } else {
       await updateResponderStatus(responderId, 'finished');
       await sendAllAnswers(responderId, answers);
       router.push('/end');
     }
-  };
+  }, [currentQuestionIndex, responderId, answers, router]);
 
   const currentQuestion = questions[currentQuestionIndex];
+  const currentAnswer = answers[currentQuestion.id];
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
   const isNextButtonDisabled =
-  currentQuestion.type === 'multiple-input' || currentQuestion.type === 'dce'
-    ? !allAnswersProvided
-    : !currentAnswer;
+    currentQuestion.type === 'multiple-input' || currentQuestion.type === 'dce'
+      ? !allAnswersProvided
+      : !currentAnswer;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-background">
@@ -85,6 +80,7 @@ export default function Survey() {
               className={`px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-opacity ${
                 isNextButtonDisabled ? 'invisible' : ''
               }`}
+              disabled={isNextButtonDisabled}
             >
               Dalej
             </button>
@@ -97,6 +93,7 @@ export default function Survey() {
               className={`px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-opacity ${
                 isNextButtonDisabled ? 'invisible' : ''
               }`}
+              disabled={isNextButtonDisabled}
             >
               Wyślij
             </button>

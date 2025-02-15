@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import ItemCard from '../items/ItemCard';
 import NoChoice from '../items/NoChoice';
 import { brands } from '@/app/data/brands';
@@ -34,6 +34,20 @@ interface DCEQuestionProps {
   onAllAnswered: (allAnswered: boolean) => void;
 }
 
+const typeKeyMap: Record<string, string> = {
+  type_burger_classic: 'burger_classic',
+  type_burger_premium: 'burger_premium',
+  type_bundle_classic: 'bundle_classic',
+  type_bundle_premium: 'bundle_premium',
+};
+
+const brandKeyMap: Record<string, string> = {
+  brand_mcdonalds: 'mcdonalds',
+  brand_burger_king: 'burger_king',
+  brand_max_burger: 'max_burger',
+  brand_wendys: 'wendys',
+};
+
 export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQuestionProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
@@ -41,20 +55,7 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
   const [options, setOptions] = useState<Record<number, any[]>>({});
 
   const currentQuestionId = question.questions[currentQuestionIndex];
-
-  const typeKeyMap: Record<string, string> = {
-    type_burger_classic: 'burger_classic',
-    type_burger_premium: 'burger_premium',
-    type_bundle_classic: 'bundle_classic',
-    type_bundle_premium: 'bundle_premium',
-  };
-
-  const brandKeyMap: Record<string, string> = {
-    brand_mcdonalds: 'mcdonalds',
-    brand_burger_king: 'burger_king',
-    brand_max_burger: 'max_burger',
-    brand_wendys: 'wendys',
-  };
+  const prevAllAnsweredRef = useRef<boolean>(false);
 
   useEffect(() => {
     const storedObservations = localStorage.getItem('surveyObservations');
@@ -84,12 +85,9 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
     setOptions(groupedOptions);
   }, [observations]);
 
-  const currentOptions = useMemo(() => options[currentQuestionId] || [], [options, currentQuestionId]);
+  const currentOptions = options[currentQuestionId] || [];
 
-  const allAnswered = useMemo(
-    () => question.questions.every((qid) => selectedAnswers[qid]),
-    [question.questions, selectedAnswers]
-  );
+  const allAnswered = question.questions.every((qid) => selectedAnswers[qid]);
 
   const handleAnswer = useCallback((questionId: number, alternativeId: string) => {
     setSelectedAnswers((prev) => ({
@@ -105,13 +103,17 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
   }, [currentQuestionIndex, question.questions.length]);
 
   useEffect(() => {
-    onAllAnswered(allAnswered);
+    if (prevAllAnsweredRef.current !== allAnswered) {
+      onAllAnswered(allAnswered);
+      prevAllAnsweredRef.current = allAnswered;
+    }
   }, [allAnswered, onAllAnswered]);
 
   useEffect(() => {
-    if (allAnswered) {
+    if (allAnswered && prevAllAnsweredRef.current !== allAnswered) {
       const formattedAnswers = Object.values(selectedAnswers);
       onAnswer(formattedAnswers);
+      prevAllAnsweredRef.current = allAnswered;
     }
   }, [allAnswered, selectedAnswers, onAnswer]);
 
@@ -138,7 +140,7 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
       brand_logo: brandData?.brand_logo || '',
       price: observation.price,
     };
-  }, [typeKeyMap, brandKeyMap]);
+  }, []);
 
   return (
     <div className="space-y-4 w-full max-w-6xl mx-auto">

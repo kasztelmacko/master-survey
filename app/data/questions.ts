@@ -89,7 +89,7 @@ export const questions: Question[] = [
     name: 'brand-recognition',
     type: 'multiple-input',
     inputType: 'text',
-    question: 'Czy rozpoznasz te marki po logo?',
+    question: 'Czy rozpoznasz te marki po tym fragmencie logo?',
     displayMode: 'logo-only',
     items: [
       { src: brands.kfc.brand_pic, alt: 'KFC' },
@@ -146,7 +146,7 @@ export const questions: Question[] = [
     name: 'dce',
     type: 'dce',
     question: 'Który produkt wybierasz?',
-    questions: [1,2,3,4,5]
+    questions: [1,2,3,4,5,6,7,8,9,10]
   },
   {
     id: "11",
