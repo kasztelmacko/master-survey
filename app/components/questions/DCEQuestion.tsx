@@ -72,11 +72,11 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
   const [observations, setObservations] = useState<Observation[]>([]);
   const [options, setOptions] = useState<Record<number, Option[]>>({});
 
-  const currentQuestionId = question.questions[currentQuestionIndex];
-  const prevAllAnsweredRef = useRef<boolean>(false);
+  const hasSubmittedAnswersRef = useRef(false);
 
-  // Move getObservationData above the useEffect where it's used
-  const getObservationData = useCallback((observation: Observation) => {
+  const currentQuestionId = question.questions[currentQuestionIndex];
+
+  const getObservationData = useCallback((observation: Observation): OptionData => {
     const brandKey = Object.keys(brandKeyMap).find(
       (key) => observation[key as keyof Observation] === 1
     );
@@ -84,10 +84,13 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
       (key) => observation[key as keyof Observation] === 1
     );
 
-    const brandData = brandKey ? brands[brandKeyMap[brandKey] as keyof typeof brands] : undefined;
-    const itemData = brandKey && itemTypeKey
-      ? items[brandKeyMap[brandKey] as keyof typeof items]?.[typeKeyMap[itemTypeKey] as keyof typeof items[keyof typeof items]]
+    const brandData = brandKey
+      ? brands[brandKeyMap[brandKey] as keyof typeof brands]
       : undefined;
+    const itemData =
+      brandKey && itemTypeKey
+        ? items[brandKeyMap[brandKey] as keyof typeof items]?.[typeKeyMap[itemTypeKey] as keyof typeof items[keyof typeof items]]
+        : undefined;
 
     return {
       name: itemData?.name || 'Unknown Item',
@@ -109,7 +112,7 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
   }, []);
 
   useEffect(() => {
-    if (!observations) return;
+    if (!observations.length) return;
 
     const groupedOptions: Record<number, Option[]> = {};
     observations.forEach((observation) => {
@@ -117,7 +120,7 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
         id: observation.alternative_id,
         question_id: observation.question_id,
         noChoice: observation.no_choice === 1,
-        data: !observation.no_choice ? getObservationData(observation) : undefined,
+        data: observation.no_choice === 1 ? undefined : getObservationData(observation),
       };
 
       if (!groupedOptions[observation.question_id]) {
@@ -129,7 +132,7 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
     setOptions(groupedOptions);
   }, [observations, getObservationData]);
 
-  const currentOptions = options[currentQuestionId] || [];
+  const currentOptions: Option[] = options[currentQuestionId] || [];
 
   const allAnswered = question.questions.every((qid) => selectedAnswers[qid]);
 
@@ -147,17 +150,14 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
   }, [currentQuestionIndex, question.questions.length]);
 
   useEffect(() => {
-    if (prevAllAnsweredRef.current !== allAnswered) {
-      onAllAnswered(allAnswered);
-      prevAllAnsweredRef.current = allAnswered;
-    }
+    onAllAnswered(allAnswered);
   }, [allAnswered, onAllAnswered]);
 
   useEffect(() => {
-    if (allAnswered && prevAllAnsweredRef.current !== allAnswered) {
+    if (allAnswered && !hasSubmittedAnswersRef.current) {
       const formattedAnswers = Object.values(selectedAnswers);
       onAnswer(formattedAnswers);
-      prevAllAnsweredRef.current = allAnswered;
+      hasSubmittedAnswersRef.current = true;
     }
   }, [allAnswered, selectedAnswers, onAnswer]);
 

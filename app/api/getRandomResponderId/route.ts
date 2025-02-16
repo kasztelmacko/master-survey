@@ -23,15 +23,6 @@ export async function GET() {
 
     const responderId = responders[0].respondent_id;
 
-    const { error: updateError } = await supabase
-      .from('respondent_ids')
-      .update({ status: 'in_progress' })
-      .eq('respondent_id', responderId);
-
-    if (updateError) {
-      throw updateError;
-    }
-
     return NextResponse.json({ success: true, responderId });
   } catch (error) {
     console.error('Error fetching responder ID:', error);
