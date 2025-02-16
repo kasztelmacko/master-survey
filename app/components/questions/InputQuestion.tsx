@@ -16,7 +16,7 @@ export default function InputQuestion({ question, onAnswer }: InputQuestionProps
         type={question.inputType}
         onChange={(e) => onAnswer(e.target.value)}
         className="w-full max-w-2xl px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-        placeholder="Your answer"
+        placeholder="Wiek"
       />
     </div>
   );

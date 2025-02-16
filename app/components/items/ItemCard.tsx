@@ -29,11 +29,11 @@ export default function ItemCard({
       {/* Image Section */}
       <div className="h-48 w-full relative">
         <Image
-          className="rounded-t-lg w-full h-full object-cover"
           src={src}
           alt={alt}
-          layout="fill"
-          objectFit="cover"
+          fill
+          sizes="(max-width: 768px) 100vw, 300px" // Adjust based on your layout
+          className="rounded-t-lg object-cover"
           draggable="false"
         />
       </div>
@@ -55,7 +55,7 @@ export default function ItemCard({
       {/* Bottom Section with Kcal/Gram, Brand Logo, and Price */}
       {(brand_logo || kcal || gram || price !== undefined) && (
         <div
-          className="p-4 rounded-b-lg grid grid-cols-3 items-center w-full"
+          className="p-4 rounded-b-lg grid grid-cols-3 items-center w-full border-t border-gray-200"
           style={{ backgroundColor: main_color }}
         >
           {/* Left Side: Kcal and Gram */}

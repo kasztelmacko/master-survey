@@ -75,6 +75,32 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
   const currentQuestionId = question.questions[currentQuestionIndex];
   const prevAllAnsweredRef = useRef<boolean>(false);
 
+  // Move getObservationData above the useEffect where it's used
+  const getObservationData = useCallback((observation: Observation) => {
+    const brandKey = Object.keys(brandKeyMap).find(
+      (key) => observation[key as keyof Observation] === 1
+    );
+    const itemTypeKey = Object.keys(typeKeyMap).find(
+      (key) => observation[key as keyof Observation] === 1
+    );
+
+    const brandData = brandKey ? brands[brandKeyMap[brandKey] as keyof typeof brands] : undefined;
+    const itemData = brandKey && itemTypeKey
+      ? items[brandKeyMap[brandKey] as keyof typeof items]?.[typeKeyMap[itemTypeKey] as keyof typeof items[keyof typeof items]]
+      : undefined;
+
+    return {
+      name: itemData?.name || 'Unknown Item',
+      description: itemData?.description || '',
+      src: itemData?.img_url || '',
+      kcal: observation.kcal,
+      gram: observation.gram,
+      main_color: brandData?.main_color || '#ffffff',
+      brand_logo: brandData?.brand_logo || '',
+      price: observation.price,
+    };
+  }, []);
+
   useEffect(() => {
     const storedObservations = localStorage.getItem('surveyObservations');
     if (storedObservations) {
@@ -101,7 +127,7 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
     });
 
     setOptions(groupedOptions);
-  }, [observations]);
+  }, [observations, getObservationData]);
 
   const currentOptions = options[currentQuestionId] || [];
 
@@ -134,31 +160,6 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
       prevAllAnsweredRef.current = allAnswered;
     }
   }, [allAnswered, selectedAnswers, onAnswer]);
-
-  const getObservationData = useCallback((observation: Observation) => {
-    const brandKey = Object.keys(brandKeyMap).find(
-      (key) => observation[key as keyof Observation] === 1
-    );
-    const itemTypeKey = Object.keys(typeKeyMap).find(
-      (key) => observation[key as keyof Observation] === 1
-    );
-
-    const brandData = brandKey ? brands[brandKeyMap[brandKey] as keyof typeof brands] : undefined;
-    const itemData = brandKey && itemTypeKey
-      ? items[brandKeyMap[brandKey] as keyof typeof items]?.[typeKeyMap[itemTypeKey] as keyof typeof items[keyof typeof items]]
-      : undefined;
-
-    return {
-      name: itemData?.name || 'Unknown Item',
-      description: itemData?.description || '',
-      src: itemData?.img_url || '',
-      kcal: observation.kcal,
-      gram: observation.gram,
-      main_color: brandData?.main_color || '#ffffff',
-      brand_logo: brandData?.brand_logo || '',
-      price: observation.price,
-    };
-  }, []);
 
   return (
     <div className="space-y-4 w-full max-w-6xl mx-auto">

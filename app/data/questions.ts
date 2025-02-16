@@ -18,7 +18,7 @@ export const questions: Question[] = [
     options: [
       { id: 'mezczyzna', label: 'Mężczyzna' },
       { id: 'kobieta', label: 'Kobieta' },
-      { id: 'inne', label: 'Inne' },
+      { id: 'inne', label: 'Wolę nie mówić' },
     ],
     layout: 'vertical',
   },
@@ -82,7 +82,7 @@ export const questions: Question[] = [
     name: 'brand-recall',
     type: 'input-multiple',
     inputType: 'text',
-    question: 'Jakie marki fast-food znasz z całego świata?',
+    question: 'Jakie marki fast-food z całego świata znasz?',
   },
   {
     id: '8',

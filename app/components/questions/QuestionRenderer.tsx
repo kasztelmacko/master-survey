@@ -31,7 +31,7 @@ export default function QuestionRenderer({
     case 'multiple-input':
       return <MultipleInputQuestion question={question} onAnswer={onAnswer} onAllAnswered={onAllAnswered!} />;
     case 'dce':
-      return <DCEQuestion question={question} onAnswer={(answers) => onAnswer(answers as any)} onAllAnswered={onAllAnswered!}/>;
+      return <DCEQuestion question={question} onAnswer={(answers) => onAnswer(answers)} onAllAnswered={onAllAnswered!}/>;
     default:
       return null;
   }

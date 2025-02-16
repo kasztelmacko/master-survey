@@ -70,8 +70,8 @@ export default function MultipleInputQuestion({
               <Image
                 src={currentItem.src}
                 alt={currentItem.alt}
-                layout="fill"
-                objectFit="contain"
+                fill
+                sizes="128px"
                 className="object-contain"
               />
             </figure>

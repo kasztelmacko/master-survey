@@ -22,7 +22,7 @@ export const brands = {
       brand_pic: 'https://kkpcuktyelbwgigadulx.supabase.co/storage/v1/object/public/item_photos//subway_pic.png'
     },
     max_burger: {
-      main_color: '#ee141f',
+      main_color: '#412f2f',
       brand_logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Max_%28Restaurant%29_logo.svg/150px-Max_%28Restaurant%29_logo.svg.png',
       brand_pic: 'https://kkpcuktyelbwgigadulx.supabase.co/storage/v1/object/public/item_photos//max_burger_pic.png'
     },
