@@ -118,7 +118,6 @@ async function sendAllAnswers(responderId: number, answers: Record<string, strin
       throw new Error('Failed to submit survey');
     }
 
-    const data = await response.json();
   } catch (error) {
     console.error('Error submitting survey:', error);
   }

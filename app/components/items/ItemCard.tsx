@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 interface ItemCardProps {
   src: string;
@@ -26,11 +27,13 @@ export default function ItemCard({
   return (
     <div className="h-full relative group flex flex-col border rounded-lg shadow-md w-full max-w-xs mx-auto">
       {/* Image Section */}
-      <div className="h-48 w-full">
-        <img
+      <div className="h-48 w-full relative">
+        <Image
           className="rounded-t-lg w-full h-full object-cover"
           src={src}
           alt={alt}
+          layout="fill"
+          objectFit="cover"
           draggable="false"
         />
       </div>
@@ -66,10 +69,12 @@ export default function ItemCard({
           {/* Middle: Brand Logo */}
           {brand_logo && (
             <div className="flex justify-center">
-              <img
+              <Image
                 src={brand_logo}
                 alt="Brand Logo"
                 className="h-8 object-contain"
+                width={32}
+                height={32}
               />
             </div>
           )}

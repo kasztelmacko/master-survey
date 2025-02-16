@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import ItemCard from '../items/ItemCard';
 
 interface Item {
@@ -13,7 +14,7 @@ interface Item {
   main_color?: string;
   brand_logo?: string;
   price?: number;
-  [key: string]: any;
+  [key: string]: string | number | undefined;
 }
 
 interface MultipleInputQuestionProps {
@@ -66,11 +67,13 @@ export default function MultipleInputQuestion({
         <div className="space-y-2">
           {/* Render logo-only or item card based on displayMode */}
           {question.displayMode === 'logo-only' ? (
-            <figure className="w-32 h-32 flex items-center justify-center mx-auto">
-              <img
+            <figure className="w-32 h-32 flex items-center justify-center mx-auto relative">
+              <Image
                 src={currentItem.src}
                 alt={currentItem.alt}
-                className="max-w-full max-h-full object-contain"
+                layout="fill"
+                objectFit="contain"
+                className="object-contain"
               />
             </figure>
           ) : (

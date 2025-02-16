@@ -1,4 +1,4 @@
-import { Question, DCEAlternative } from '../types';
+import { Question } from '../types';
 import { brands } from './brands';
 
 export const questions: Question[] = [
@@ -110,7 +110,7 @@ export const questions: Question[] = [
     displayMode: 'item-card',
     items: [
       {
-        src: 'https://cdn.mcdonalds.pl/uploads/20220922161306/wies-mac.png',
+        src: 'https://kkpcuktyelbwgigadulx.supabase.co/storage/v1/object/public/item_photos//wies-mac.png',
         alt: 'McDonald\'s',
         name: 'WieśMac',
         description: 'Klasyczny burger z wołowiną, serem cheddar, cebulą, ogórkiem, sałatą, pomidorem i sosem majonezowym',
@@ -120,7 +120,7 @@ export const questions: Question[] = [
         brand_logo: brands.mcdonalds.brand_logo,
       },
       {
-        src: 'https://cdn.prod.website-files.com/631b4b4e277091ef01450237/65947cd2a2c28c35b5ca6fb1_Whopper%20w%20Cheese.png',
+        src: 'https://kkpcuktyelbwgigadulx.supabase.co/storage/v1/object/public/item_photos//whooper.png',
         alt: 'Burger King',
         name: 'Whooper',
         description: 'Klasyczny burger z wołowiną, serem, sałatą, cebulą, ogórkiem, pomidorem i sosem majonezowym',

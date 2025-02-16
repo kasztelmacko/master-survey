@@ -1,13 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
+
+interface Item {
+  src: string;
+  alt: string;
+  [key: string]: string;
+}
 
 interface InputMultipleQuestionProps {
   question: {
     id: string;
     question: string;
-    inputType?: 'text';
-    items?: { src: string; alt: string; [key: string]: any }[];
+    inputType?: 'text' | 'number';
+    items?: Item[];
   };
   onAnswer: (answers: string[]) => void;
 }
@@ -34,9 +41,11 @@ export default function InputMultipleQuestion({ question, onAnswer }: InputMulti
           {question.items.map((item, index) => (
             <div key={index} className="flex flex-col items-center gap-2">
               <figure className="w-32 h-32 flex items-center justify-center">
-                <img
+                <Image
                   src={item.src}
                   alt={item.alt}
+                  width={128}
+                  height={128}
                   className="max-w-full max-h-full object-contain"
                 />
               </figure>

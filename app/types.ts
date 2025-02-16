@@ -1,5 +1,3 @@
-// types.ts
-
 export type QuestionType = 'single-choice' | 'multiple-choice' | 'input' | 'multiple-input' | 'input-multiple' | 'dce';
 export type QuestionLayout = 'vertical' | 'horizontal';
 export type DisplayMode = 'logo-only' | 'item-card';
@@ -15,7 +13,7 @@ interface Item {
   brand_logo?: string;
   price?: number;
   no_choice?: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface DCEAlternative {
