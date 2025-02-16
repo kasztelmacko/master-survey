@@ -48,11 +48,29 @@ const brandKeyMap: Record<string, string> = {
   brand_wendys: 'wendys',
 };
 
+interface OptionData {
+  name: string;
+  description: string;
+  src: string;
+  kcal: number;
+  gram: number;
+  main_color: string;
+  brand_logo: string;
+  price: number;
+}
+
+interface Option {
+  id: number;
+  question_id: number;
+  noChoice: boolean;
+  data?: OptionData;
+}
+
 export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQuestionProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
   const [observations, setObservations] = useState<Observation[]>([]);
-  const [options, setOptions] = useState<Record<number, any[]>>({});
+  const [options, setOptions] = useState<Record<number, Option[]>>({});
 
   const currentQuestionId = question.questions[currentQuestionIndex];
   const prevAllAnsweredRef = useRef<boolean>(false);
@@ -67,9 +85,9 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
   useEffect(() => {
     if (!observations) return;
 
-    const groupedOptions: Record<number, any[]> = {};
+    const groupedOptions: Record<number, Option[]> = {};
     observations.forEach((observation) => {
-      const option = {
+      const option: Option = {
         id: observation.alternative_id,
         question_id: observation.question_id,
         noChoice: observation.no_choice === 1,
@@ -150,27 +168,27 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
 
       <div className="mb-8">
         <div className="p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {currentOptions.map((option: any) => (
+          {currentOptions.map((option: Option) => (
             <div
               key={option.id}
               className={`cursor-pointer ${
-                selectedAnswers[currentQuestionId] === option.id ? 'ring-2 ring-primary' : ''
+                selectedAnswers[currentQuestionId] === option.id.toString() ? 'ring-2 ring-primary' : ''
               }`}
-              onClick={() => handleAnswer(currentQuestionId, option.id)}
+              onClick={() => handleAnswer(currentQuestionId, option.id.toString())}
             >
               {option.noChoice ? (
                 <NoChoice />
               ) : (
                 <ItemCard
-                  src={option.data?.src}
-                  alt={option.data?.name}
-                  name={option.data?.name}
-                  description={option.data?.description}
-                  kcal={option.data?.kcal}
-                  gram={option.data?.gram}
-                  main_color={option.data?.main_color}
-                  brand_logo={option.data?.brand_logo}
-                  price={option.data?.price}
+                  src={option.data?.src || ''}
+                  alt={option.data?.name || 'Unknown Item'}
+                  name={option.data?.name || 'Unknown Item'}
+                  description={option.data?.description || ''}
+                  kcal={option.data?.kcal || 0}
+                  gram={option.data?.gram || 0}
+                  main_color={option.data?.main_color || '#ffffff'}
+                  brand_logo={option.data?.brand_logo || ''}
+                  price={option.data?.price || 0}
                 />
               )}
             </div>

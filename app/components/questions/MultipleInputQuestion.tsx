@@ -14,7 +14,6 @@ interface Item {
   main_color?: string;
   brand_logo?: string;
   price?: number;
-  [key: string]: string | number | undefined;
 }
 
 interface MultipleInputQuestionProps {

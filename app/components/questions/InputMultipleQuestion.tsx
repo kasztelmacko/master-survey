@@ -6,7 +6,6 @@ import Image from 'next/image';
 interface Item {
   src: string;
   alt: string;
-  [key: string]: string;
 }
 
 interface InputMultipleQuestionProps {
