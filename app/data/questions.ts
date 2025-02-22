@@ -143,13 +143,20 @@ export const questions: Question[] = [
   },
   {
     id: '10',
+    name: 'vigniette',
+    type: 'vigniette',
+    question: 'Przeczytaj poniższy tekst i kliknij Dalej, aby kontynuować.',
+    text: 'Wyobraź sobie, że planujesz zjeść burgera w restauracji fast-food. Przed Tobą znajduje się kilka różnych opcji, z których każda ma swoje unikalne cechy, takie jak cena, gramatura, wartość kaloryczna, rodzaj i marka. Twoim zadaniem jest dokonanie wyboru produktu, który najchętniej byś zjadł/a. W każdej rundzie zobaczysz kilka propozycji produktów z ich cechami. Przeanalizuj dostępne opcje i wybierz tę, która najbardziej odpowiada Twoim preferencjom. Jeśli żadna z przedstawionych opcji Ci nie odpowiada, będziesz mieć możliwość zaznaczenia, że nie wybierasz żadnej z nich.',
+  },
+  {
+    id: '11',
     name: 'dce',
     type: 'dce',
     question: 'Który produkt wybierasz?',
     questions: [1,2,3,4,5,6,7,8,9,10]
   },
   {
-    id: "11",
+    id: "12",
     name: "past-use",
     type: "multiple-choice",
     question: "W których z wymienionych restauracji fast-food miałeś/miałaś okazję zjeść?",

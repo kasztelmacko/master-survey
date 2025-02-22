@@ -61,7 +61,7 @@ export default function Survey() {
   const isNextButtonDisabled =
     currentQuestion.type === 'multiple-input' || currentQuestion.type === 'dce'
       ? !allAnswersProvided
-      : !currentAnswer;
+      : currentQuestion.type !== 'vigniette' && !currentAnswer;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-background">

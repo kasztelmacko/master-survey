@@ -52,7 +52,7 @@ export default function Home() {
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <div className="text-center sm:text-left max-w-2xl">
           <h1 className="text-2xl sm:text-3xl font-bold mb-4">
-            Witaj w ankiecie do pracy magisterskiej!
+            Witaj w mojej ankiecie do pracy magisterskiej poświęconej preferenjom konsumenckim w restauracjach fast-food!
           </h1>
           <div>
             Będziesz proszony/proszona o odpowiedzi na pytania dotyczące produktów

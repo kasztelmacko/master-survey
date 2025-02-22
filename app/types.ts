@@ -1,4 +1,4 @@
-export type QuestionType = 'single-choice' | 'multiple-choice' | 'input' | 'multiple-input' | 'input-multiple' | 'dce';
+export type QuestionType = 'single-choice' | 'multiple-choice' | 'input' | 'multiple-input' | 'input-multiple' | 'dce' | 'vigniette';
 export type QuestionLayout = 'vertical' | 'horizontal';
 export type DisplayMode = 'logo-only' | 'item-card';
 
@@ -72,10 +72,16 @@ export interface DCEQuestion extends BaseQuestion {
   questions: number[];
 }
 
+export interface VignietteQuestion extends BaseQuestion {
+  type: 'vigniette';
+  text: string;
+}
+
 export type Question =
   | SingleChoiceQuestion
   | MultipleChoiceQuestion
   | InputQuestion
   | MultipleInputQuestion
   | InputMultipleQuestion
-  | DCEQuestion;
+  | DCEQuestion
+  | VignietteQuestion;

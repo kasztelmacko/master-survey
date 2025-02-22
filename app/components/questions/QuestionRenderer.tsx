@@ -7,6 +7,7 @@ import InputQuestion from './InputQuestion';
 import MultipleInputQuestion from './MultipleInputQuestion';
 import InputMultipleQuestion from './InputMultipleQuestion';
 import DCEQuestion from './DCEQuestion';
+import DCEVigniette from './DCEVigniette';
 
 interface QuestionRendererProps {
   question: Question;
@@ -17,7 +18,7 @@ interface QuestionRendererProps {
 export default function QuestionRenderer({ 
   question, 
   onAnswer, 
-  onAllAnswered, 
+  onAllAnswered 
 }: QuestionRendererProps) {
   switch (question.type) {
     case 'single-choice':
@@ -32,6 +33,8 @@ export default function QuestionRenderer({
       return <MultipleInputQuestion question={question} onAnswer={onAnswer} onAllAnswered={onAllAnswered!} />;
     case 'dce':
       return <DCEQuestion question={question} onAnswer={onAnswer} onAllAnswered={onAllAnswered!}/>;
+    case 'vigniette':
+      return <DCEVigniette question={question} onAnswer={onAnswer} />;
     default:
       return null;
   }

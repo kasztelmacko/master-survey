@@ -61,6 +61,7 @@ export default function MultipleInputQuestion({
   return (
     <div className="space-y-4 w-full max-w-2xl mx-auto">
       <h2 className="text-2xl font-semibold text-text">{question.question}</h2>
+      <p>Jeżeli nie umiesz nazwać tej marki wpisz <b>nie wiem</b></p>
 
       <div className="space-y-6">
         <div className="space-y-2">
