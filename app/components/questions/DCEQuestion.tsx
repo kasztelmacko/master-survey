@@ -164,7 +164,7 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
   return (
     <div className="space-y-4 w-full max-w-6xl mx-auto">
       <h2 className="text-2xl font-semibold flex w-full max-w-2xl mx-auto text-text">
-        {question.question}
+        {question.question} ({currentQuestionIndex + 1} / {question.questions.length})
       </h2>
 
       <div className="mb-8">

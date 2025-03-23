@@ -58,9 +58,17 @@ export default function MultipleInputQuestion({
     onAllAnswered(allAnswered);
   }, [answers, onAllAnswered]);
 
+  const inputType = question.displayMode === 'logo-only' ? 'text' : 'number';
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (question.displayMode === 'item-card' && !/[0-9]/.test(e.key)) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <div className="space-y-4 w-full max-w-2xl mx-auto">
-      <h2 className="text-2xl font-semibold text-text">{question.question}</h2>
+      <h2 className="text-2xl font-semibold text-text">{question.question} ({currentItemIndex + 1} / {question.items.length})</h2>
       {question.displayMode === 'logo-only' && (
         <p>Jeżeli nie umiesz nazwać tej marki wpisz <b>nie wiem</b></p>
       )}
@@ -94,15 +102,17 @@ export default function MultipleInputQuestion({
 
           <div className="relative">
             <input
-              type={question.inputType}
+              type={inputType}
               value={answers[currentItemIndex]}
               onChange={(e) => handleInputChange(e.target.value)}
+              onKeyPress={handleKeyPress}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-28"
               placeholder={
                 question.displayMode === 'logo-only'
                   ? 'Co to za logo? Wpisz nazwę i kliknij Dalej'
                   : 'Wpisz odpowiedź i kliknij Dalej'
               }
+              inputMode={question.displayMode === 'item-card' ? 'numeric' : 'text'}
             />
             {!isLastItem && (
               <button
