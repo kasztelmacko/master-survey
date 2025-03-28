@@ -45,13 +45,14 @@ export default function MultipleInputQuestion({
   };
 
   const handleNext = () => {
-    if (currentItemIndex < question.items.length - 1) {
+    if (currentItemIndex < question.items.length - 1 && answers[currentItemIndex].trim() !== '') {
       setCurrentItemIndex((prev) => prev + 1);
     }
   };
 
   const currentItem = question.items[currentItemIndex];
   const isLastItem = currentItemIndex === question.items.length - 1;
+  const isCurrentAnswerEmpty = answers[currentItemIndex].trim() === '';
 
   useEffect(() => {
     const allAnswered = answers.every((answer) => answer.trim() !== '');
@@ -117,7 +118,12 @@ export default function MultipleInputQuestion({
             {!isLastItem && (
               <button
                 onClick={handleNext}
-                className="absolute right-0 top-0 h-full w-24 bg-primary text-white rounded-r-lg hover:bg-primary/90 focus:outline-none"
+                disabled={isCurrentAnswerEmpty}
+                className={`absolute right-0 top-0 h-full w-24 rounded-r-lg focus:outline-none ${
+                  isCurrentAnswerEmpty
+                    ? 'bg-gray-300 cursor-not-allowed'
+                    : 'bg-primary text-white hover:bg-primary/90'
+                }`}
               >
                 Dalej
               </button>
