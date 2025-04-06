@@ -3,11 +3,13 @@ import { supabase } from '@/lib/supabaseClient';
 
 export async function GET() {
   try {
+    const randomId = Math.floor(Math.random() * 200) + 1;
+
     const { data: responders, error: fetchError } = await supabase
       .from('respondent_ids')
       .select('respondent_id')
       .eq('status', 'free')
-      .order('respondent_id', { ascending: true })
+      .eq('respondent_id', randomId)
       .limit(1);
 
     if (fetchError) {

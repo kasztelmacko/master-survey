@@ -38,7 +38,7 @@ export async function GET(request: Request) {
     }
 
     const { data: observations, error } = await supabase
-      .from('DCESurvey')
+      .from('DCESurvey_new')
       .select(
         `
         alternative_id,
