@@ -162,14 +162,14 @@ export const questions: Question[] = [
     question: "W których z wymienionych restauracji fast-food miałeś/miałaś okazję zjeść?",
     options: [
       { id: "mcdonalds", "label": "McDonald's" },
-      { id: "burger-king", "label": "Burger King" },
+      { id: "burger king", "label": "Burger King" },
       { id: "wendys", "label": "Wendy's" },
       { id: "kfc", "label": "KFC" },
       { id: "subway", "label": "Subway" },
-      { id: "max-burgers" , "label": "Max Burgers" },
-      { id: "north-fish", "label": "North Fish" },
+      { id: "max burgers" , "label": "Max Burgers" },
+      { id: "north fish", "label": "North Fish" },
       { id: "popeyes", "label": "Popeyes" },
-      { id: "five-guys", "label": "Five Guys" },
+      { id: "five guys", "label": "Five Guys" },
     ],
     layout: "vertical"
   }
