@@ -98,6 +98,7 @@ export const questions: Question[] = [
       { src: brands.subway.brand_pic, alt: 'Subway' },
       { src: brands.taco_bell.brand_pic, alt: 'Taco Bell' },
       { src: brands.wendys.brand_pic, alt: 'Wendy\'s' },
+      { src: brands.max_burger.brand_pic, alt: 'Max Burgers' },
       { src: brands.popeyes.brand_pic, alt: 'Popeyes' },
     ],
   },
