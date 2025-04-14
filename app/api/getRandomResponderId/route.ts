@@ -3,14 +3,10 @@ import { supabase } from '@/lib/supabaseClient';
 
 export async function GET() {
   try {
-    const randomId = Math.floor(Math.random() * 200) + 1;
-
     const { data: responders, error: fetchError } = await supabase
       .from('respondent_ids')
       .select('respondent_id')
-      .eq('status', 'free')
-      .eq('respondent_id', randomId)
-      .limit(1);
+      .eq('status', 'free');
 
     if (fetchError) {
       throw fetchError;
@@ -23,7 +19,8 @@ export async function GET() {
       );
     }
 
-    const responderId = responders[0].respondent_id;
+    const randomIndex = Math.floor(Math.random() * responders.length);
+    const responderId = responders[randomIndex].respondent_id;
 
     return NextResponse.json({ success: true, responderId });
   } catch (error) {
