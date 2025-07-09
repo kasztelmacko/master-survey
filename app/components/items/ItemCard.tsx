@@ -32,7 +32,7 @@ export default function ItemCard({
           src={src}
           alt={alt}
           fill
-          sizes="(max-width: 768px) 100vw, 300px" // Adjust based on your layout
+          sizes="(max-width: 768px) 100vw, 300px"
           className="rounded-t-lg object-cover"
           draggable="false"
         />

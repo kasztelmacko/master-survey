@@ -14,21 +14,18 @@ export default function Survey() {
 
   useEffect(() => {
     const storedResponderId = localStorage.getItem('responderId');
-    
     if (storedResponderId) {
       setResponderId(Number(storedResponderId));
     } else {
       console.error('Responder ID not found in localStorage');
     }
-
-    const updateStatus = async () => {
-      if (storedResponderId) {
-        await updateResponderStatus(Number(storedResponderId), 'in_progress');
-      }
-    };
-
-    updateStatus();
   }, []);
+
+  useEffect(() => {
+    if (responderId !== null) {
+      updateResponderStatus(responderId, 'in_progress');
+    }
+  }, [responderId]);
 
   const handleAnswer = useCallback((questionId: string, answer: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));

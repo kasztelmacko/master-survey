@@ -107,7 +107,13 @@ export default function DCEQuestion({ question, onAnswer, onAllAnswered }: DCEQu
   useEffect(() => {
     const storedObservations = localStorage.getItem('surveyObservations');
     if (storedObservations) {
-      setObservations(JSON.parse(storedObservations));
+      try {
+        const parsed = JSON.parse(storedObservations);
+        setObservations(parsed);
+      } catch (e) {
+        console.error('[DCEQuestion] Failed to parse surveyObservations:', e, storedObservations);
+      }
+    } else {
     }
   }, []);
 
