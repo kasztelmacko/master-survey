@@ -38,14 +38,13 @@ export async function GET(request: Request) {
     }
 
     const { data: observations, error } = await supabase
-      .from('DCESurvey_new')
+      .from('DCESurvey')
       .select(
         `
         alternative_id,
         gram,
         kcal,
         no_choice,
-        observation_id,
         price,
         question_id,
         respondent_id,
